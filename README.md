@@ -23,3 +23,7 @@ Aplicatie pentru gestionarea comenzilor, meniurilor si rezervarilor intr-un rest
 3. Administrarea stocului de ingrediente.
 4. Gestionarea platilor pentru comenzi.
 5. Rapoarte privind popularitatea preparatelor.
+
+
+Documentatie JSON: http://localhost:8080/v3/api-docs
+Swagger Ui: http://localhost:8080/swagger-ui/index.html
