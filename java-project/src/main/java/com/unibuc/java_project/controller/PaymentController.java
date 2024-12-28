@@ -6,6 +6,7 @@ import com.unibuc.java_project.service.PaymentService;
 import io.swagger.v3.oas.annotations.*;
 import io.swagger.v3.oas.annotations.media.*;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,7 +39,7 @@ public class PaymentController {
                     required = true,
                     schema = @Schema(implementation = Payment.class)
             )
-            @RequestBody Payment payment
+            @Valid @RequestBody Payment payment
     ) {
         return paymentService.createPayment(payment.getAmountPaid(), payment.getMethod());
     }
@@ -50,7 +51,7 @@ public class PaymentController {
                     name = "id",
                     description = "The ID of the payment to retrieve",
                     required = true,
-                    example = "123",
+                    example = "1",
                     schema = @Schema(type = "integer", format = "int64")
             )
             @PathVariable Long id

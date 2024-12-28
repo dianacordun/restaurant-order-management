@@ -10,12 +10,12 @@ Aplicatie pentru gestionarea comenzilor, meniurilor si rezervarilor intr-un rest
 6. Generarea de rapoarte privind cele mai comandate preparate.
 7. Monitorizarea statusului comenzilor.
 8. Istoric al comenzilor per client.
-9. Posibilitatea de a face comenzi online pentru preluare sau livrare.
+9. Posibilitatea de plati cash sau card.
 10. Control asupra disponibilitatii preparatelor in functie de stoc.
 
 ## Entitati si Relatii
-* **Entitati:** Client, Comanda, Preparat, Rezervare, Ingredient, Plata
-* **Relatii:** Comanda-Client (many-to-one), Comanda-Plata (one-to-one), Comanda-Preparat (many-to-many), Preparat-Ingredient (many-to-many), Client-Rezervare (one-to-many)
+* **Entitati:** Client, Order, Dish, Reservation, Ingredient, Payment
+* **Relatii:** Order-Client (many-to-one), Order-Payment (one-to-one), Order-Dish (many-to-many), Dish-Ingredient (many-to-many), Client-Reservation (one-to-many)
 
 ## MVP features
 1. CRUD pentru meniul de preparate si ingrediente.
