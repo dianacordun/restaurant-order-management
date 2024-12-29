@@ -7,6 +7,9 @@ import jakarta.validation.constraints.NotNull;
 @Entity
 public class Payment {
 
+    public Payment() {
+    }
+
     public Payment(Double amountPaid, PaymentMethod method)
     {
         this.amountPaid = amountPaid;
@@ -31,13 +34,34 @@ public class Payment {
     @JoinColumn(name = "order_id", referencedColumnName = "id")
     private Order order;
 
+    // Getters & Setters
+    public Long getId() {
+        return id;
+    }
+
     public Double getAmountPaid()
     {
         return this.amountPaid;
     }
 
+    public void setAmountPaid(@Min(value = 1, message = "The amount paid must be at least 1.") @NotNull(message = "Amount must be provided") Double amountPaid) {
+        this.amountPaid = amountPaid;
+    }
+
+    public void setMethod(@NotNull(message = "Method of payment must be either 'card' or 'cash'") PaymentMethod method) {
+        this.method = method;
+    }
+
     public PaymentMethod getMethod()
     {
         return this.method;
+    }
+
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
     }
 }

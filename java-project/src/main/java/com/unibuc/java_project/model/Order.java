@@ -11,6 +11,9 @@ import java.util.List;
 @Table(name = "orders")
 public class Order {
 
+    public Order() {
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -42,10 +45,7 @@ public class Order {
     @NotNull(message = "Amount must be provided")
     private Double amountToPay;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
+    // Getters & Setters
     public void setClient(Client client) {
         this.client = client;
     }
@@ -64,6 +64,30 @@ public class Order {
 
     public void setAmountToPay(Double amountToPay) {
         this.amountToPay = amountToPay;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Payment getPayment() {
+        return payment;
+    }
+
+    public @NotNull(message = "Dishes list cannot be null.") @Size(min = 1, message = "An order must contain at least one dish.") List<Dish> getDishes() {
+        return dishes;
+    }
+
+    public @NotNull(message = "Status must be provided") Status getStatus() {
+        return status;
+    }
+
+    public @Min(value = 1, message = "The amount must be at least 1.") @NotNull(message = "Amount must be provided") Double getAmountToPay() {
+        return amountToPay;
     }
 }
 
