@@ -18,7 +18,7 @@ Aplicatie pentru gestionarea comenzilor, meniurilor si rezervarilor intr-un rest
 * **Relatii:** Order-Client (many-to-one), Order-Payment (one-to-one), Order-Dish (many-to-many), Dish-Ingredient (many-to-many), Client-Reservation (one-to-many)
 
 ## MVP features
-1. CRUD pentru meniul de preparate si ingrediente.
+1. CRUD pentru meniul de preparate.
 2. Gestionarea comenzilor si a rezervarilor.
 3. Administrarea stocului de ingrediente.
 4. Gestionarea platilor pentru comenzi.
