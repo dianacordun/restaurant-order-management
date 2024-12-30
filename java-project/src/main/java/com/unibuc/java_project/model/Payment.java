@@ -10,10 +10,11 @@ public class Payment {
     public Payment() {
     }
 
-    public Payment(Double amountPaid, PaymentMethod method)
+    public Payment(Double amountPaid, PaymentMethod method, Order order)
     {
         this.amountPaid = amountPaid;
         this.method = method;
+        this.order = order;
     }
 
     @Id
@@ -30,7 +31,7 @@ public class Payment {
     @Column(nullable = false)
     private PaymentMethod method;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE) // CascadeType.MERGE so that any changes to the Order are also propagated when saving the Payment
     @JoinColumn(name = "order_id", referencedColumnName = "id")
     private Order order;
 

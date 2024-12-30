@@ -1,17 +1,21 @@
 package com.unibuc.java_project.controller;
 
+import com.unibuc.java_project.dto.PaymentDTO;
 import com.unibuc.java_project.model.Payment;
 import com.unibuc.java_project.repository.PaymentRepository;
 import com.unibuc.java_project.service.PaymentService;
 import io.swagger.v3.oas.annotations.*;
 import io.swagger.v3.oas.annotations.media.*;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
+@Tag(name = "Payments", description = "Add a new payment entry or see details of a payment.")
 @RestController
 @RequestMapping("/api/payments")
 public class PaymentController {
@@ -21,32 +25,51 @@ public class PaymentController {
     @Autowired
     private PaymentService paymentService;
 
-    @Operation(summary = "Get all payments", description = "Fetches all payments.")
-    @GetMapping
-    public List<Payment> getAllPayments() {
-        return paymentRepository.findAll();
-    }
+//    @Operation(
+//            summary = "Get all payments",
+//            description = "Fetches all payments.",
+//            responses = {
+//                    @ApiResponse(responseCode = "200", description = "List of payments retrieved successfully")
+//            }
+//    )
+//    @GetMapping
+//    public List<Payment> getAllPayments() {
+//        return paymentRepository.findAll();
+//    }
 
     @Operation(
             summary = "Create a new payment",
-            description = "This endpoint allows you to create a new payment in the system."
+            description = "This endpoint allows you to create a new payment in the system.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Payment created successfully"),
+                    @ApiResponse(responseCode = "400", description = "Bad request"),
+                    @ApiResponse(responseCode = "404", description = "Order not found")
+            }
     )
-    @ApiResponse(responseCode = "201", description = "Payment created successfully")
     @PostMapping
-    public Payment createPayment(
+    public ResponseEntity<?> createPayment(
             @Parameter(
                     description = "The payment details including amount, method, etc.",
                     required = true,
                     schema = @Schema(implementation = Payment.class)
             )
-            @Valid @RequestBody Payment payment
+            @Valid @RequestBody PaymentDTO paymentDTO
     ) {
-        return paymentService.createPayment(payment.getAmountPaid(), payment.getMethod());
+        try {
+            PaymentDTO payment = paymentService.createPayment(paymentDTO);
+            return ResponseEntity.status(201).body(payment);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(404).body("Order not found: " + ex.getMessage());
+        }
     }
 
     @Operation(summary = "Retrieve payment by ID", description = "Fetches details of a payment using its unique ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Payment details fetched successfully"),
+            @ApiResponse(responseCode = "404", description = "Payment not found")
+    })
     @GetMapping("/{id}")
-    public Payment getPayment(
+    public ResponseEntity<?> getPayment(
             @Parameter(
                     name = "id",
                     description = "The ID of the payment to retrieve",
@@ -56,6 +79,11 @@ public class PaymentController {
             )
             @PathVariable Long id
     ) {
-        return paymentService.getPayment(id);
+        try {
+            PaymentDTO paymentDTO = paymentService.getPaymentById(id);
+            return ResponseEntity.ok(paymentDTO);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(404).body("Payment not found: " + ex.getMessage());
+        }
     }
 }
