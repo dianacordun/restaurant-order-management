@@ -1,5 +1,6 @@
 package com.unibuc.java_project.dto;
 
+import com.unibuc.java_project.model.PaymentMethod;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
