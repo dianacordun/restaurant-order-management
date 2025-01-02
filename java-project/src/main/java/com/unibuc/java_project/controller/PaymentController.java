@@ -2,7 +2,6 @@ package com.unibuc.java_project.controller;
 
 import com.unibuc.java_project.dto.PaymentDTO;
 import com.unibuc.java_project.model.Payment;
-import com.unibuc.java_project.repository.PaymentRepository;
 import com.unibuc.java_project.service.PaymentService;
 import io.swagger.v3.oas.annotations.*;
 import io.swagger.v3.oas.annotations.media.*;
@@ -19,8 +18,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/payments")
 public class PaymentController {
-    @Autowired
-    private PaymentRepository paymentRepository;
 
     @Autowired
     private PaymentService paymentService;

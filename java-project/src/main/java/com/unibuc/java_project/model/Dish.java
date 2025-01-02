@@ -13,6 +13,14 @@ public class Dish {
     public Dish() {
     }
 
+    public Dish(Long id, String name, Double price, boolean available, List<Ingredient> ingredients) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.ingredients = ingredients;
+        this.available = available;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

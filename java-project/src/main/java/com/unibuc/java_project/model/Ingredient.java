@@ -11,6 +11,12 @@ public class Ingredient {
     public Ingredient() {
     }
 
+    public Ingredient(Long id, String name) {
+        this.id = id;
+        this.name = name;
+        this.stock = 0;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
