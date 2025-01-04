@@ -11,7 +11,7 @@ public class PaymentDTO {
     private Double amountPaid;
 
     @NotNull(message = "Method of payment must be either 'card' or 'cash'")
-    private String method;
+    private PaymentMethod method;
 
     @NotNull(message = "Order ID must be provided")
     private Long orderId;
@@ -20,7 +20,7 @@ public class PaymentDTO {
     public PaymentDTO() {
     }
 
-    public PaymentDTO(Double amountPaid, String method, Long orderId) {
+    public PaymentDTO(Double amountPaid, PaymentMethod method, Long orderId) {
         this.amountPaid = amountPaid;
         this.method = method;
         this.orderId = orderId;
@@ -35,11 +35,11 @@ public class PaymentDTO {
         this.amountPaid = amountPaid;
     }
 
-    public String getMethod() {
+    public PaymentMethod getMethod() {
         return method;
     }
 
-    public void setMethod(String method) {
+    public void setMethod(PaymentMethod method) {
         this.method = method;
     }
 

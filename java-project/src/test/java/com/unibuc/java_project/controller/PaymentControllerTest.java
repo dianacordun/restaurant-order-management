@@ -1,6 +1,7 @@
 package com.unibuc.java_project.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.unibuc.java_project.dto.PaymentDTO;
+import com.unibuc.java_project.model.PaymentMethod;
 import com.unibuc.java_project.repository.PaymentRepository;
 import com.unibuc.java_project.service.PaymentService;
 import org.junit.jupiter.api.Test;
@@ -33,8 +34,8 @@ public class PaymentControllerTest {
     @Test
     public void createPayment_ShouldReturnCreatedPayment() throws Exception {
         // Mock data
-        PaymentDTO requestPayment = new PaymentDTO(100.0, "CASH", 1L);
-        PaymentDTO responsePayment = new PaymentDTO(100.0, "CASH", 1L);
+        PaymentDTO requestPayment = new PaymentDTO(100.0, PaymentMethod.CASH, 1L);
+        PaymentDTO responsePayment = new PaymentDTO(100.0, PaymentMethod.CASH, 1L);
 
         // Mock service behavior
         Mockito.when(paymentService.createPayment(Mockito.any(PaymentDTO.class)))
@@ -59,15 +60,33 @@ public class PaymentControllerTest {
         // Perform POST request and validate error response
         mockMvc.perform(post("/api/payments")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(new PaymentDTO(100.0, "CARD", 99L))))
+                        .content(objectMapper.writeValueAsString(new PaymentDTO(100.0, PaymentMethod.CARD, 99L))))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(containsString("Order not found")));
     }
 
     @Test
+    public void createPayment_ShouldReturnBadRequest_WhenPaymentAmountIsInsufficient() throws Exception {
+        // PaymentDTO with an insufficient amount
+        PaymentDTO insufficientPaymentDTO = new PaymentDTO(50.0, PaymentMethod.CARD, 1L); // Amount less than the order total
+
+        Mockito.when(paymentService.createPayment(Mockito.any(PaymentDTO.class)))
+                .thenThrow(new IllegalArgumentException("Insufficient payment amount. The payment must be at least the order's total price of 100.0"));
+
+        // Perform POST request and validate error response
+        mockMvc.perform(post("/api/payments")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(insufficientPaymentDTO)))
+                .andExpect(status().isBadRequest()) // Expect HTTP 400 Bad Request
+                .andExpect(content().string(containsString("Insufficient payment amount")))
+                .andExpect(content().string(containsString("at least the order's total price of 100.0"))); // Verify error message contains expected details
+    }
+
+
+    @Test
     public void getPayment_ShouldReturnPaymentDetails() throws Exception {
         // Mock data
-        PaymentDTO paymentDTO = new PaymentDTO(200.0, "CASH", 2L);
+        PaymentDTO paymentDTO = new PaymentDTO(200.0, PaymentMethod.CASH, 2L);
 
         // Mock service behavior
         Mockito.when(paymentService.getPaymentById(2L)).thenReturn(paymentDTO);

@@ -4,6 +4,7 @@ import com.unibuc.java_project.dto.DishCreateDTO;
 import com.unibuc.java_project.dto.DishDTO;
 import com.unibuc.java_project.dto.IngredientForDishDTO;
 import com.unibuc.java_project.exceptions.ResourceNotFoundException;
+import com.unibuc.java_project.exceptions.UnavailableException;
 import com.unibuc.java_project.model.Dish;
 import com.unibuc.java_project.model.Ingredient;
 import com.unibuc.java_project.repository.DishRepository;
@@ -37,7 +38,7 @@ public class DishService {
         List<Ingredient> ingredients = ingredientRepository.findAllById(request.getIngredientIds());
 
         if (ingredients.isEmpty()) {
-            throw new RuntimeException("No valid ingredients found for the given IDs.");
+            throw new UnavailableException("No valid ingredients found for the given IDs.");
         }
         if (ingredients.size() != request.getIngredientIds().size()) {
             throw new ResourceNotFoundException("Some ingredients were not found.");
@@ -53,14 +54,14 @@ public class DishService {
     }
 
     public Dish updateDishAvailability(Long id, Boolean availability) {
-        Dish dish = dishRepository.findById(id).orElseThrow(() -> new RuntimeException("Dish not found"));
+        Dish dish = dishRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Dish not found"));
         dish.setAvailable(availability);
         return dishRepository.save(dish);
     }
 
     public void deleteDish(Long id) {
         if (!dishRepository.existsById(id)) {
-            throw new RuntimeException("Dish not found");
+            throw new ResourceNotFoundException("Dish not found");
         }
         dishRepository.deleteById(id);
     }

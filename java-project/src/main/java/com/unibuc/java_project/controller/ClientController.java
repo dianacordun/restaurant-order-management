@@ -13,12 +13,10 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Tag(name = "Clients", description = "See all orders placed by a client or add one.")
 @RestController
@@ -37,13 +35,10 @@ public class ClientController {
     @GetMapping("/{clientId}/orders")
     public ResponseEntity<List<OrderDTO>> getClientOrders(
             @Parameter(description = "The ID of the client") @PathVariable Long clientId) {
-        try {
             List<OrderDTO> orders = clientService.getClientOrders(clientId);
             return ResponseEntity.ok(orders);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
     }
+
 
     @Operation(summary = "Add a new client", description = "Adds a new client to the system using the provided client data")
     @ApiResponses(value = {

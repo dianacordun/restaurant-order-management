@@ -52,12 +52,8 @@ public class PaymentController {
             )
             @Valid @RequestBody PaymentDTO paymentDTO
     ) {
-        try {
             PaymentDTO payment = paymentService.createPayment(paymentDTO);
             return ResponseEntity.status(201).body(payment);
-        } catch (RuntimeException ex) {
-            return ResponseEntity.status(404).body("Order not found: " + ex.getMessage());
-        }
     }
 
     @Operation(summary = "Retrieve payment by ID", description = "Fetches details of a payment using its unique ID.")
@@ -76,11 +72,7 @@ public class PaymentController {
             )
             @PathVariable Long id
     ) {
-        try {
             PaymentDTO paymentDTO = paymentService.getPaymentById(id);
             return ResponseEntity.ok(paymentDTO);
-        } catch (RuntimeException ex) {
-            return ResponseEntity.status(404).body("Payment not found: " + ex.getMessage());
-        }
     }
 }

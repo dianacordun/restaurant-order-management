@@ -1,9 +1,9 @@
 ## Sistem de Management al Comenzilor intr-un Restaurant (Restaurant Order Management)
-Aplicatie pentru gestionarea comenzilor, meniurilor si rezervarilor intr-un restaurant. Permite preluarea comenzilor de la clienti, gestionarea meniului si a rezervarilor de mese.
+Aplicatie pentru gestionarea comenzilor, preparatelor si rezervarilor intr-un restaurant. Permite preluarea comenzilor de la clienti, gestionarea meniului si a rezervarilor de mese.
 
 ### Business Requirements
-1. Adaugare, modificare si stergere de preparate din meniu.
-2. Preluarea comenzilor de la clienti.
+1. Adaugare, modificare si stergere de preparate.
+2. Preluarea comenzilor si asocierea lor cu clienti.
 3. Gestionarea rezervarilor de mese.
 4. Procesarea platilor pentru comenzi.
 5. Monitorizarea stocului de ingrediente pentru preparate.

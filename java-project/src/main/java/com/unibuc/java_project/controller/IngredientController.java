@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -50,11 +49,7 @@ public class IngredientController {
             @Parameter(description = "New stock quantity", required = true)
             @RequestParam Integer stock) {
 
-        try {
             IngredientDTO updatedIngredient = ingredientService.updateStock(id, stock);
             return ResponseEntity.ok(updatedIngredient);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
     }
 }

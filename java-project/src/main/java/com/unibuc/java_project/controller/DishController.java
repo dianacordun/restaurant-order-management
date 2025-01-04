@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -61,7 +62,7 @@ public class DishController {
             @Valid @RequestBody DishCreateDTO dishDTO) {
 
         Dish newDish = dishService.addDish(dishDTO);
-        return ResponseEntity.status(201).body("Dish successfully added.");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Dish successfully added.");
     }
 
     @Operation(

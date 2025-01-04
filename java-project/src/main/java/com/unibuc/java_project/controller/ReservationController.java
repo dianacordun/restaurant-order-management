@@ -31,13 +31,8 @@ public class ReservationController {
     )
     public ResponseEntity<?> addReservation(
             @RequestBody @Valid ReservationDTO reservationCreateDTO) {
-
-        try {
             ReservationDTO reservation = reservationService.createReservation(reservationCreateDTO);
             return ResponseEntity.status(201).body(reservation);
-        } catch (RuntimeException ex) {
-            return ResponseEntity.status(404).body(ex.getMessage());
-        }
     }
 
     @DeleteMapping("/{id}")
@@ -52,12 +47,7 @@ public class ReservationController {
     public ResponseEntity<?> deleteReservation(
             @Parameter(description = "ID of the reservation to delete", required = true)
             @PathVariable Long id) {
-
-        try {
             reservationService.deleteReservation(id);
             return ResponseEntity.ok().build();
-        } catch (RuntimeException ex) {
-            return ResponseEntity.status(404).body(ex.getMessage());
-        }
     }
 }

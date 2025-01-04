@@ -1,10 +1,9 @@
 package com.unibuc.java_project.service;
 
 import com.unibuc.java_project.dto.*;
+import com.unibuc.java_project.exceptions.ResourceNotFoundException;
 import com.unibuc.java_project.model.Client;
-import com.unibuc.java_project.model.Order;
 import com.unibuc.java_project.repository.ClientRepository;
-import com.unibuc.java_project.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,11 +18,11 @@ public class ClientService {
 
     // Get all orders by client ID
     public List<OrderDTO> getClientOrders(Long clientId) {
-        Client client = clientRepository.findById(clientId).orElseThrow(() -> new IllegalArgumentException("Client not found"));
+        Client client = clientRepository.findById(clientId).orElseThrow(() -> new ResourceNotFoundException("Client not found"));
         return client.getOrders().stream()
                 .map(order -> new OrderDTO(
                         order.getId(),
-                        new PaymentDTO(order.getPayment().getAmountPaid(), order.getPayment().getMethod().name(), order.getId()),
+                        new PaymentDTO(order.getPayment().getAmountPaid(), order.getPayment().getMethod(), order.getId()),
                         order.getDishes().stream()
                                 .map(dish -> new DishDTO(dish.getId(), dish.getName(), dish.getPrice(), dish.isAvailable(), dish.getIngredients().stream()
                                         .map(ingredient -> new IngredientForDishDTO(ingredient.getId(), ingredient.getName()))

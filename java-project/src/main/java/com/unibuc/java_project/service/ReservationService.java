@@ -1,6 +1,7 @@
 package com.unibuc.java_project.service;
 
 import com.unibuc.java_project.dto.ReservationDTO;
+import com.unibuc.java_project.exceptions.ResourceNotFoundException;
 import com.unibuc.java_project.model.Client;
 import com.unibuc.java_project.model.Reservation;
 import com.unibuc.java_project.repository.ReservationRepository;
@@ -25,7 +26,7 @@ public class ReservationService {
     public ReservationDTO createReservation(ReservationDTO reservationCreateDTO) {
         // Fetch the client by ID
         Client client = clientRepository.findById(reservationCreateDTO.getClientId())
-                .orElseThrow(() -> new RuntimeException("Client not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Client not found"));
 
         // Create a new reservation entity
         Reservation reservation = new Reservation();
@@ -42,7 +43,7 @@ public class ReservationService {
     @Transactional
     public void deleteReservation(Long reservationId) {
         if (!reservationRepository.existsById(reservationId)) {
-            throw new RuntimeException("Reservation with id " + reservationId + " not found.");
+            throw new ResourceNotFoundException("Reservation with id " + reservationId + " not found.");
         }
         reservationRepository.deleteById(reservationId);
     }
