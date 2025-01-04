@@ -3,7 +3,6 @@ package com.unibuc.java_project.controller;
 import com.unibuc.java_project.dto.DishTopDTO;
 import com.unibuc.java_project.dto.OrderDTO;
 import com.unibuc.java_project.dto.OrderToPlaceDTO;
-import com.unibuc.java_project.model.Status;
 import com.unibuc.java_project.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -30,7 +29,7 @@ public class OrderController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Order placed successfully"),
             @ApiResponse(responseCode = "404", description = "Resource from order not found"),
-            @ApiResponse(responseCode = "406", description = "Dishes or ingredients are unavailable.")
+            @ApiResponse(responseCode = "409", description = "Dishes or ingredients are unavailable.")
     })
     @PostMapping
     public ResponseEntity<?> placeOrder(@Valid @RequestBody OrderToPlaceDTO orderDTO) {
@@ -46,20 +45,21 @@ public class OrderController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getOrderById(@Parameter(description = "ID of the order to retrieve") @PathVariable Long id) {
             OrderDTO order = orderService.getOrderById(id);
-            return ResponseEntity.status(201).body(order);
+            return ResponseEntity.status(HttpStatus.OK).body(order);
     }
 
-    @Operation(summary = "Update an order's status")
+    @Operation(summary = "You can set the status to 0 (PLACED), 1 (PENDING), or 2 (COMPLETED).")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Order status updated successfully"),
-            @ApiResponse(responseCode = "404", description = "Order not found")
+            @ApiResponse(responseCode = "404", description = "Order not found"),
+            @ApiResponse(responseCode = "400", description = "Invalid status value")
     })
     @PatchMapping("/{id}")
     public ResponseEntity<?> updateOrderStatus(
             @Parameter(description = "ID of the order to update") @PathVariable Long id,
-            @Parameter(description = "New status for the order") @Valid @RequestParam Status status) {
+            @Parameter(description = "New status for the order (0 = PLACED, 1 = PENDING, 2 = COMPLETED)") @RequestParam Integer status) {
             OrderDTO order = orderService.updateOrderStatus(id, status);
-            return ResponseEntity.status(201).body(order);
+            return ResponseEntity.status(HttpStatus.OK).body(order);
     }
 
     @Operation(summary = "Get top 5 most ordered dishes")
@@ -69,6 +69,6 @@ public class OrderController {
     @GetMapping("/top-dishes")
     public ResponseEntity<?> getTop5MostOrderedDishes() {
             List<DishTopDTO> dishes  = orderService.getTop5MostOrderedDishes();
-            return ResponseEntity.status(201).body(dishes);
+            return ResponseEntity.status(HttpStatus.OK).body(dishes);
     }
 }

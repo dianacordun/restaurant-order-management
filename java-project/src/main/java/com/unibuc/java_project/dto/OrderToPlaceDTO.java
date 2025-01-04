@@ -19,6 +19,10 @@ public class OrderToPlaceDTO {
         this.clientId = clientId;
     }
 
+    public OrderToPlaceDTO() {
+
+    }
+
     // Getters & Setters
     public List<String> getDishes() {
         return dishes;

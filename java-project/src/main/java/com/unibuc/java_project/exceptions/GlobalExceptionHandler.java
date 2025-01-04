@@ -29,7 +29,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
-
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<String> handleResourceNotFound(ResourceNotFoundException ex) {
@@ -37,9 +36,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UnavailableException.class)
-    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
-    public ResponseEntity<String> handleResourceNotFound(UnavailableException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_ACCEPTABLE);
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<String> handleUnavailable(UnavailableException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

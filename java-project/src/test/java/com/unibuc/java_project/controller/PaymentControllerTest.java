@@ -1,6 +1,7 @@
 package com.unibuc.java_project.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.unibuc.java_project.dto.PaymentDTO;
+import com.unibuc.java_project.exceptions.ResourceNotFoundException;
 import com.unibuc.java_project.model.PaymentMethod;
 import com.unibuc.java_project.repository.PaymentRepository;
 import com.unibuc.java_project.service.PaymentService;
@@ -55,7 +56,7 @@ public class PaymentControllerTest {
     public void createPayment_ShouldReturnNotFound_WhenOrderNotFound() throws Exception {
         // Mock behavior for order not found
         Mockito.when(paymentService.createPayment(Mockito.any(PaymentDTO.class)))
-                .thenThrow(new RuntimeException("Order not found"));
+                .thenThrow(new ResourceNotFoundException("Order not found"));
 
         // Perform POST request and validate error response
         mockMvc.perform(post("/api/payments")
@@ -104,7 +105,7 @@ public class PaymentControllerTest {
     public void getPayment_ShouldReturnNotFound_WhenPaymentNotFound() throws Exception {
         // Mock behavior for payment not found
         Mockito.when(paymentService.getPaymentById(99L))
-                .thenThrow(new RuntimeException("Payment not found"));
+                .thenThrow(new ResourceNotFoundException("Payment not found"));
 
         // Perform GET request and validate error response
         mockMvc.perform(get("/api/payments/99"))

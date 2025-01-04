@@ -3,24 +3,20 @@ package com.unibuc.java_project.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.unibuc.java_project.dto.ClientDTO;
 import com.unibuc.java_project.dto.OrderDTO;
+import com.unibuc.java_project.exceptions.ResourceNotFoundException;
 import com.unibuc.java_project.model.Client;
 import com.unibuc.java_project.service.ClientService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -66,7 +62,7 @@ public class ClientControllerTest {
 
     @Test
     void testGetClientOrders_ClientNotFound() throws Exception {
-        when(clientService.getClientOrders(1L)).thenThrow(new IllegalArgumentException("Client not found"));
+        when(clientService.getClientOrders(1L)).thenThrow(new ResourceNotFoundException("Client not found"));
 
         // Perform the request and validate the response
         mockMvc.perform(get("/api/clients/1/orders"))

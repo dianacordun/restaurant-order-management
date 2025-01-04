@@ -106,20 +106,27 @@ public class OrderService {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
 
-        PaymentDTO paymentDTO = mapPaymentToDTO(order.getPayment(), order.getId());
+        // Check if payment is null
+        PaymentDTO paymentDTO = order.getPayment() != null
+                ? mapPaymentToDTO(order.getPayment(), order.getId())
+                : null;
         List<DishDTO> dishDTOs = mapDishesToDTO(order.getDishes());
 
         return new OrderDTO(order.getId(), paymentDTO, dishDTOs, order.getStatus().toString(), order.getAmountToPay());
     }
 
-    public OrderDTO updateOrderStatus(Long id, Status status) {
+    public OrderDTO updateOrderStatus(Long id, Integer status) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
 
-        order.setStatus(status);
+        Status statusEnum = mapToStatus(status);
+        order.setStatus(statusEnum);
         order = orderRepository.save(order);
 
-        PaymentDTO paymentDTO = mapPaymentToDTO(order.getPayment(), order.getId());
+        PaymentDTO paymentDTO = null;
+        if (order.getPayment() != null) {
+            paymentDTO = mapPaymentToDTO(order.getPayment(), order.getId());
+        }
         List<DishDTO> dishDTOs = mapDishesToDTO(order.getDishes());
 
         return new OrderDTO(order.getId(), paymentDTO, dishDTOs, order.getStatus().toString(), order.getAmountToPay());
@@ -172,5 +179,18 @@ public class OrderService {
                                         ingredient.getName()
                                 )).collect(Collectors.toList())
                 )).collect(Collectors.toList());
+    }
+
+    private Status mapToStatus(Integer status) {
+        switch (status) {
+            case 0:
+                return Status.PLACED;
+            case 1:
+                return Status.PENDING;
+            case 2:
+                return Status.COMPLETED;
+            default:
+                throw new IllegalArgumentException("Invalid status value. Allowed values are 0 (PLACED), 1 (PENDING), 2 (COMPLETED).");
+        }
     }
 }

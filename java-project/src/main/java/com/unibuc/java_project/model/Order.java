@@ -66,6 +66,10 @@ public class Order {
         this.amountToPay = amountToPay;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Client getClient() {
         return client;
     }

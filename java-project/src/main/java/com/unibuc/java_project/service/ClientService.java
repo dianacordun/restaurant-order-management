@@ -20,16 +20,29 @@ public class ClientService {
     public List<OrderDTO> getClientOrders(Long clientId) {
         Client client = clientRepository.findById(clientId).orElseThrow(() -> new ResourceNotFoundException("Client not found"));
         return client.getOrders().stream()
-                .map(order -> new OrderDTO(
-                        order.getId(),
-                        new PaymentDTO(order.getPayment().getAmountPaid(), order.getPayment().getMethod(), order.getId()),
-                        order.getDishes().stream()
-                                .map(dish -> new DishDTO(dish.getId(), dish.getName(), dish.getPrice(), dish.isAvailable(), dish.getIngredients().stream()
-                                        .map(ingredient -> new IngredientForDishDTO(ingredient.getId(), ingredient.getName()))
-                                        .collect(Collectors.toList())))
-                                .collect(Collectors.toList()),
-                        order.getStatus().toString(),
-                        order.getAmountToPay()))
+                .map(order -> {
+                    // Check if payment is null
+                    PaymentDTO paymentDTO = order.getPayment() != null
+                            ? new PaymentDTO(order.getPayment().getAmountPaid(), order.getPayment().getMethod(), order.getId())
+                            : null;
+
+                    return new OrderDTO(
+                            order.getId(),
+                            paymentDTO,
+                            order.getDishes().stream()
+                                    .map(dish -> new DishDTO(
+                                            dish.getId(),
+                                            dish.getName(),
+                                            dish.getPrice(),
+                                            dish.isAvailable(),
+                                            dish.getIngredients().stream()
+                                                    .map(ingredient -> new IngredientForDishDTO(ingredient.getId(), ingredient.getName()))
+                                                    .collect(Collectors.toList())))
+                                    .collect(Collectors.toList()),
+                            order.getStatus().toString(),
+                            order.getAmountToPay()
+                    );
+                })
                 .collect(Collectors.toList());
     }
 

@@ -25,5 +25,9 @@ Aplicatie pentru gestionarea comenzilor, preparatelor si rezervarilor intr-un re
 5. Rapoarte privind popularitatea preparatelor.
 
 
-Documentatie JSON: http://localhost:8080/v3/api-docs
+
 Swagger Ui: http://localhost:8080/swagger-ui/index.html
+
+Documentatie JSON: http://localhost:8080/v3/api-docs
+
+[Documentatie JSON.json](..%2F..%2F..%2FUsers%2Fdiana%2FOneDrive%2FDesktop%2Frestaurant%20spring%20app%20docs.json)

@@ -1,6 +1,7 @@
 package com.unibuc.java_project.controller;
 
 import com.unibuc.java_project.dto.IngredientDTO;
+import com.unibuc.java_project.exceptions.ResourceNotFoundException;
 import com.unibuc.java_project.service.IngredientService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -78,7 +79,7 @@ public class IngredientControllerTest {
         // Arrange
         Long ingredientId = 1L;
         int newStock = 60;
-        when(ingredientService.updateStock(ingredientId, newStock)).thenThrow(new RuntimeException("Ingredient not found"));
+        when(ingredientService.updateStock(ingredientId, newStock)).thenThrow(new ResourceNotFoundException("Ingredient not found"));
 
         // Act & Assert
         mockMvc.perform(patch("/api/ingredients/{id}/stock", ingredientId)
