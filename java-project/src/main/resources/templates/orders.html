@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Orders</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" />
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="mb-4">Manage Orders</h1>
+
+    <!-- Card group for actions -->
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        <!-- Place Order Card -->
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title">Place Order</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Place a new order by filling out the form.</p>
+                    <button class="btn btn-primary" onclick="loadForm('/orders/place-order')">Go to Form</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Get Order by ID Card -->
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="card-title">Get Order by ID</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Retrieve an order by its unique ID.</p>
+                    <button class="btn btn-secondary" onclick="loadForm('/orders/{id}')">Enter Order ID</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Update Order Status Card -->
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title">Update Order Status</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Change the status of an order (e.g., from PLACED to PENDING).</p>
+                    <button class="btn btn-success" onclick="loadForm('/orders/update')">Update Status</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Dishes Card -->
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="card-title">Top Dishes</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">See the top 5 most ordered dishes.</p>
+                    <button class="btn btn-danger" onclick="loadForm('/orders/top-dishes')">View Top Dishes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="form-container" class="mt-5">
+        <!-- Form will be loaded here dynamically -->
+    </div>
+</div>
+
+<script src="/webjars/jquery/3.7.1/jquery.min.js"></script>
+<script>
+    function loadForm(endpoint) {
+        $.ajax({
+            url: endpoint,
+            method: 'GET',
+            success: function(response) {
+                $('#form-container').html(response);
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

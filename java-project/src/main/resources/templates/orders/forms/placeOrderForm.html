@@ -1,0 +1,11 @@
+<form action="/orders/place" method="post" th:object="${orderDTO}">
+    <div class="form-group">
+        <label for="dishes">Dishes</label>
+        <input type="text" th:field="*{dishes}" class="form-control" id="dishes" required>
+    </div>
+    <div class="form-group">
+        <label for="clientId">Client ID</label>
+        <input type="number" th:field="*{clientId}" class="form-control" id="clientId">
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
