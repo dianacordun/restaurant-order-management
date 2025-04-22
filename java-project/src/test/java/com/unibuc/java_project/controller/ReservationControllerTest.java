@@ -1,5 +1,6 @@
 package com.unibuc.java_project.controller;
 
+import com.unibuc.java_project.annotations.WebMvcTestWithTestProfile;
 import com.unibuc.java_project.dto.ReservationDTO;
 import com.unibuc.java_project.exceptions.ResourceNotFoundException;
 import com.unibuc.java_project.service.ReservationService;
@@ -21,7 +22,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(ReservationController.class)
+@WebMvcTestWithTestProfile(controllers = ReservationController.class)
 public class ReservationControllerTest {
 
     @Autowired

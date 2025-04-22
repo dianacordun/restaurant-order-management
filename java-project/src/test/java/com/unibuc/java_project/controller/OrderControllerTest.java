@@ -1,6 +1,7 @@
 package com.unibuc.java_project.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.unibuc.java_project.annotations.WebMvcTestWithTestProfile;
 import com.unibuc.java_project.dto.DishTopDTO;
 import com.unibuc.java_project.dto.OrderDTO;
 import com.unibuc.java_project.dto.OrderToPlaceDTO;
@@ -23,7 +24,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@WebMvcTest(OrderController.class)
+@WebMvcTestWithTestProfile(controllers = OrderController.class)
 public class OrderControllerTest {
 
     @Autowired

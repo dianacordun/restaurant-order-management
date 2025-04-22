@@ -22,18 +22,6 @@ public class PaymentController {
     @Autowired
     private PaymentService paymentService;
 
-//    @Operation(
-//            summary = "Get all payments",
-//            description = "Fetches all payments.",
-//            responses = {
-//                    @ApiResponse(responseCode = "200", description = "List of payments retrieved successfully")
-//            }
-//    )
-//    @GetMapping
-//    public List<Payment> getAllPayments() {
-//        return paymentRepository.findAll();
-//    }
-
     @Operation(
             summary = "Create a new payment",
             description = "This endpoint allows you to create a new payment in the system.",

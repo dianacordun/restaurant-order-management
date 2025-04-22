@@ -1,6 +1,7 @@
 package com.unibuc.java_project.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.unibuc.java_project.annotations.WebMvcTestWithTestProfile;
 import com.unibuc.java_project.dto.ClientDTO;
 import com.unibuc.java_project.dto.OrderDTO;
 import com.unibuc.java_project.exceptions.ResourceNotFoundException;
@@ -24,7 +25,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-@WebMvcTest(ClientController.class)
+@WebMvcTestWithTestProfile(controllers = ClientController.class)
 @ExtendWith(MockitoExtension.class)
 public class ClientControllerTest {
 

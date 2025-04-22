@@ -17,6 +17,8 @@ Aplicatie pentru gestionarea comenzilor, preparatelor si rezervarilor intr-un re
 * **Entitati:** Client, Order, Dish, Reservation, Ingredient, Payment
 * **Relatii:** Order-Client (many-to-one), Order-Payment (one-to-one), Order-Dish (many-to-many), Dish-Ingredient (many-to-many), Client-Reservation (one-to-many)
 
+![Diagrama ERD](diagramaERD.png)
+
 ## MVP features
 1. CRUD pentru meniul de preparate.
 2. Gestionarea comenzilor si a rezervarilor.

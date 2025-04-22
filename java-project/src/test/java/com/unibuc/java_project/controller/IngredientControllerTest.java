@@ -1,5 +1,6 @@
 package com.unibuc.java_project.controller;
 
+import com.unibuc.java_project.annotations.WebMvcTestWithTestProfile;
 import com.unibuc.java_project.dto.IngredientDTO;
 import com.unibuc.java_project.exceptions.ResourceNotFoundException;
 import com.unibuc.java_project.service.IngredientService;
@@ -19,7 +20,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(IngredientController.class)
+@WebMvcTestWithTestProfile(controllers = IngredientController.class)
 public class IngredientControllerTest {
 
     @Autowired

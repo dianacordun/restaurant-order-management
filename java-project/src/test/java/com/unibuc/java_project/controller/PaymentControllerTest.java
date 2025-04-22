@@ -1,5 +1,6 @@
 package com.unibuc.java_project.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.unibuc.java_project.annotations.WebMvcTestWithTestProfile;
 import com.unibuc.java_project.dto.PaymentDTO;
 import com.unibuc.java_project.exceptions.ResourceNotFoundException;
 import com.unibuc.java_project.model.PaymentMethod;
@@ -17,7 +18,7 @@ import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(PaymentController.class)
+@WebMvcTestWithTestProfile(controllers = PaymentController.class)
 public class PaymentControllerTest {
 
     @Autowired

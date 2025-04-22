@@ -1,6 +1,7 @@
 package com.unibuc.java_project.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.unibuc.java_project.annotations.WebMvcTestWithTestProfile;
 import com.unibuc.java_project.dto.DishCreateDTO;
 import com.unibuc.java_project.dto.DishDTO;
 import com.unibuc.java_project.dto.IngredientForDishDTO;
@@ -27,7 +28,7 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(DishController.class)
+@WebMvcTestWithTestProfile(controllers = DishController.class)
 @ExtendWith(MockitoExtension.class)
 public class DishControllerTest {
 
