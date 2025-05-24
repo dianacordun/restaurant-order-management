@@ -3,6 +3,7 @@ package com.unibuc.java_project.controller;
 import com.unibuc.java_project.dto.DishTopDTO;
 import com.unibuc.java_project.dto.OrderDTO;
 import com.unibuc.java_project.dto.OrderToPlaceDTO;
+import com.unibuc.java_project.model.PaymentMethod;
 import com.unibuc.java_project.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -57,10 +58,12 @@ public class OrderController {
     @PatchMapping("/{id}")
     public ResponseEntity<?> updateOrderStatus(
             @Parameter(description = "ID of the order to update") @PathVariable Long id,
-            @Parameter(description = "New status for the order (0 = PLACED, 1 = PENDING, 2 = COMPLETED)") @RequestParam Integer status) {
-            OrderDTO order = orderService.updateOrderStatus(id, status);
-            return ResponseEntity.status(HttpStatus.OK).body(order);
+            @Parameter(description = "New status for the order (0 = PLACED, 1 = PENDING, 2 = COMPLETED)") @RequestParam Integer status,
+            @Parameter(description = "Payment method for the order (CARD or CASH). Required when status is COMPLETED.") @RequestParam PaymentMethod paymentMethod) {
+        OrderDTO order = orderService.updateOrderStatus(id, status, paymentMethod);
+        return ResponseEntity.status(HttpStatus.OK).body(order);
     }
+
 
     @Operation(summary = "Get top 5 most ordered dishes")
     @ApiResponses(value = {

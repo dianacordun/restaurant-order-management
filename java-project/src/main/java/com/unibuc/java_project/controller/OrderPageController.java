@@ -4,6 +4,7 @@ import com.unibuc.java_project.dto.OrderDTO;
 import com.unibuc.java_project.dto.OrderToPlaceDTO;
 import com.unibuc.java_project.exceptions.ResourceNotFoundException;
 import com.unibuc.java_project.exceptions.UnavailableException;
+import com.unibuc.java_project.model.PaymentMethod;
 import com.unibuc.java_project.service.OrderService; // Import the service
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,21 +38,6 @@ public class OrderPageController {
         }
     }
 
-
-//    @PostMapping("/place")
-//    public String placeOrder(@ModelAttribute("orderDTO") OrderToPlaceDTO orderDTO, Model model) {
-//        try {
-//            // Call the service layer to place the order
-//            OrderDTO placedOrder = orderService.placeOrder(orderDTO);
-//
-//            // Redirect to the order details page
-//            return "redirect:/orders/" + placedOrder.getId();
-//        } catch (Exception e) {
-//            // Add error message and return to the form
-//            model.addAttribute("error", e.getMessage());
-//            return "orders/forms/placeOrderForm";
-//        }
-//    }
 
     @GetMapping("/place")
     public String showPlaceOrderForm(Model model) {
@@ -97,10 +83,14 @@ public class OrderPageController {
 
 
     @PostMapping("/update")
-    public String updateOrder(@RequestParam Long orderId, @RequestParam Integer status, Model model) {
+    public String updateOrder(
+            @RequestParam Long orderId,
+            @RequestParam Integer status,
+            @RequestParam PaymentMethod paymentMethod,
+            Model model) {
         try {
-            // Call the service layer to update the order status
-            orderService.updateOrderStatus(orderId, status);
+            // Call the service layer to update the order status and payment method
+            orderService.updateOrderStatus(orderId, status, paymentMethod);
 
             // Redirect to the orders page with a success message
             model.addAttribute("message", "Order updated successfully!");

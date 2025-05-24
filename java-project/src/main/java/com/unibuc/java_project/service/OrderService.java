@@ -126,7 +126,7 @@ public class OrderService {
         return new OrderDTO(order.getId(), paymentDTO, dishDTOs, order.getStatus().toString(), order.getAmountToPay());
     }
 
-    public OrderDTO updateOrderStatus(Long id, Integer status) {
+    public OrderDTO updateOrderStatus(Long id, Integer status, PaymentMethod paymentMethod) {
         // Retrieve the order by ID
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
@@ -149,7 +149,7 @@ public class OrderService {
 
             // Update or set payment details
             payment.setAmountPaid(order.getAmountToPay());
-            payment.setMethod(PaymentMethod.CARD);  // Default method: CARD (could use user input to alter this)
+            payment.setMethod(paymentMethod);  // Set the payment method dynamically
 
             // Save payment (cascade ensures it's saved with the order too)
             order.setPayment(payment);

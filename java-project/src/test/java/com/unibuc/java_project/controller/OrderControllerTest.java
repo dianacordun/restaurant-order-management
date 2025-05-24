@@ -7,6 +7,7 @@ import com.unibuc.java_project.dto.OrderDTO;
 import com.unibuc.java_project.dto.OrderToPlaceDTO;
 import com.unibuc.java_project.exceptions.ResourceNotFoundException;
 import com.unibuc.java_project.exceptions.UnavailableException;
+import com.unibuc.java_project.model.PaymentMethod;
 import com.unibuc.java_project.service.OrderService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,21 +80,24 @@ public class OrderControllerTest {
     @Test
     void testUpdateOrderStatusSuccess() throws Exception {
         OrderDTO mockOrderDTO = new OrderDTO(1L, null, null, "PENDING", 100.0);
-        when(orderService.updateOrderStatus(anyLong(), any(Integer.class))).thenReturn(mockOrderDTO);
+        when(orderService.updateOrderStatus(anyLong(), any(Integer.class), any(PaymentMethod.class)))
+                .thenReturn(mockOrderDTO);
 
         mockMvc.perform(MockMvcRequestBuilders.patch("/api/orders/{id}", 1L)
-                        .param("status", "1"))
+                        .param("status", "1")
+                        .param("paymentMethod", "CASH")) // Add paymentMethod as parameter
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.status").value("PENDING"));
     }
 
     @Test
     void testUpdateOrderStatusOrderNotFound() throws Exception {
-        when(orderService.updateOrderStatus(anyLong(), any(Integer.class)))
+        when(orderService.updateOrderStatus(anyLong(), any(Integer.class), any(PaymentMethod.class)))
                 .thenThrow(new ResourceNotFoundException("Order not found"));
 
         mockMvc.perform(MockMvcRequestBuilders.patch("/api/orders/{id}", 99L)
-                        .param("status", "1"))
+                        .param("status", "1")
+                        .param("paymentMethod", "CARD")) // Add paymentMethod as parameter
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andExpect(MockMvcResultMatchers.content().string(containsString("Order not found")));
     }

@@ -1,49 +1,22 @@
-<div id="error-message" class="alert alert-danger" style="display: none;"></div>
-
 <form id="updateOrderForm" action="/orders/update" method="post">
-    <div class="form-group">
+    <div class="form-group mb-3">
         <label for="orderId">Order ID</label>
-        <input type="number" name="orderId" class="form-control" id="orderId" required>
-        <small id="orderIdHelp" class="form-text text-danger" style="display: none;">Order ID does not exist</small>
+        <input type="number" class="form-control" id="orderId" name="orderId" required>
     </div>
-    <div class="form-group">
+    <div class="form-group mb-3">
         <label for="status">Status</label>
-        <select name="status" class="form-control" id="status">
-            <option value="0">Placed</option>
-            <option value="1">Pending</option>
-            <option value="2">Completed</option>
+        <select class="form-control" id="status" name="status" required>
+            <option value="0">PLACED</option>
+            <option value="1">PENDING</option>
+            <option value="2">COMPLETED</option>
+        </select>
+    </div>
+    <div class="form-group mb-3">
+        <label for="paymentMethod">Payment Method</label>
+        <select class="form-control" id="paymentMethod" name="paymentMethod" required>
+            <option value="CARD">CARD</option>
+            <option value="CASH">CASH</option>
         </select>
     </div>
     <button type="submit" class="btn btn-primary">Update Order</button>
 </form>
-
-<script>
-    let orderExists = false;
-
-    document.getElementById('orderId').addEventListener('change', function() {
-        const orderId = this.value;
-        const errorHelp = document.getElementById('orderIdHelp');
-
-        if (orderId) {
-            fetch(`/orders/check/${orderId}`)
-                .then(response => response.json())
-                .then(exists => {
-                    orderExists = exists;
-                    if (!exists) {
-                        errorHelp.style.display = 'block';
-                        errorHelp.textContent = `Order with ID ${orderId} does not exist`;
-                    } else {
-                        errorHelp.style.display = 'none';
-                    }
-                });
-        }
-    });
-
-    document.getElementById('updateOrderForm').addEventListener('submit', function(e) {
-        if (!orderExists) {
-            e.preventDefault();
-            document.getElementById('error-message').style.display = 'block';
-            document.getElementById('error-message').textContent = 'Please enter a valid order ID';
-        }
-    });
-</script>
