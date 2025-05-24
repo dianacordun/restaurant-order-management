@@ -1,5 +1,6 @@
 package com.unibuc.java_project.controller;
 import com.unibuc.java_project.controller.OrderController;
+import com.unibuc.java_project.dto.DishTopDTO;
 import com.unibuc.java_project.dto.OrderDTO;
 import com.unibuc.java_project.dto.OrderToPlaceDTO;
 import com.unibuc.java_project.exceptions.ResourceNotFoundException;
@@ -14,6 +15,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import com.unibuc.java_project.model.Order;
 
+import java.util.List;
+
 
 @Controller
 @RequestMapping("/orders")
@@ -26,6 +29,28 @@ public class OrderPageController {
     public String showOrdersPage(Model model) {
         return "orders";
     }
+//
+//    @GetMapping("/top-dishes")
+//    @ResponseBody
+//    public List<DishTopDTO> getTopDishes() {
+//        return orderService.getTop5MostOrderedDishes();
+//    }
+
+
+
+    @GetMapping("/top-dishes")
+    public String showTopDishesPage(Model model) {
+        // Fetch the top dishes from the service
+        List<DishTopDTO> topDishes = orderService.getTop5MostOrderedDishes();
+
+        // Add the list to the Thymeleaf model
+        model.addAttribute("topDishes", topDishes);
+
+        // Return the name of the Thymeleaf template to be rendered
+        return "topDishes";
+    }
+
+
 
     @PostMapping("/place")
     @ResponseBody

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Top 5 Most Ordered Dishes</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" />
+</head>
+<body>
+<div class="container mt-5">
+    <h1>Top 5 Most Ordered Dishes</h1>
+
+    <ul class="list-group mt-4">
+        <li class="list-group-item" th:each="dish : ${topDishes}">
+            <span th:text="'Rank #' + ${dish.rank}"></span>:
+            <strong th:text="${dish.name}"></strong>
+            (Ordered <span th:text="${dish.orderCount}"></span> times)
+            - <span th:text="'Price: $' + ${dish.price}"></span>
+        </li>
+    </ul>
+
+    <a href="/orders" class="btn btn-primary mt-4">Back to Orders</a>
+</div>
+</body>
+</html>
