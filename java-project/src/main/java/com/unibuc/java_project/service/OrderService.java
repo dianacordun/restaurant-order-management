@@ -127,14 +127,38 @@ public class OrderService {
     }
 
     public OrderDTO updateOrderStatus(Long id, Integer status) {
+        // Retrieve the order by ID
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
 
-        // Update status
+        // Map status (0 = PLACED, 1 = PENDING, 2 = COMPLETED)
         Status statusEnum = mapToStatus(status);
+
+        // Update the order's status
         order.setStatus(statusEnum);
+
+        // If the status is COMPLETED, update/create the Payment record
+        if (statusEnum == Status.COMPLETED) {
+            Payment payment = order.getPayment();
+
+            // If no existing payment, create a new Payment object
+            if (payment == null) {
+                payment = new Payment();
+                payment.setOrder(order);  // Associate the payment with the order
+            }
+
+            // Update or set payment details
+            payment.setAmountPaid(order.getAmountToPay());
+            payment.setMethod(PaymentMethod.CARD);  // Default method: CARD (could use user input to alter this)
+
+            // Save payment (cascade ensures it's saved with the order too)
+            order.setPayment(payment);
+        }
+
+        // Save the updated order
         order = orderRepository.save(order);
 
+        // Convert order details back to a DTO for the response
         PaymentDTO paymentDTO = null;
         if (order.getPayment() != null) {
             paymentDTO = mapPaymentToDTO(order.getPayment(), order.getId());
@@ -143,7 +167,6 @@ public class OrderService {
 
         return new OrderDTO(order.getId(), paymentDTO, dishDTOs, order.getStatus().toString(), order.getAmountToPay());
     }
-
     public List<DishTopDTO> getTop5MostOrderedDishes() {
         List<Order> orders = orderRepository.findAll();
         Map<Dish, Integer> dishCount = new HashMap<>();
