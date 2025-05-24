@@ -35,7 +35,7 @@ public class OrderService {
 
     @Transactional
     public OrderDTO placeOrder(OrderToPlaceDTO orderDTO) {
-
+        // Create and initialize the Order object
         Order order = new Order();
         order.setStatus(Status.PLACED);
 
@@ -48,20 +48,22 @@ public class OrderService {
 
         // Validate and calculate the total amount to pay
         double totalAmountToPay = 0.0;
-
-        // Validate dish availability and calculate amount
-        Map<Long, Integer> ingredientUsage = new HashMap<>();
         List<Dish> dishesToAdd = new ArrayList<>();
+        Map<Long, Integer> ingredientUsage = new HashMap<>();
+
         for (String dishName : orderDTO.getDishes()) {
+            // Retrieve Dish from repository or throw exception
             Dish dish = dishRepository.findByName(dishName)
                     .orElseThrow(() -> new ResourceNotFoundException("Dish not found: " + dishName));
 
+            // Validate availability
             if (!dish.isAvailable()) {
                 throw new UnavailableException("Dish is not available: " + dish.getName());
             }
 
-            totalAmountToPay += dish.getPrice();
+            // Add to dishes and calculate total price
             dishesToAdd.add(dish);
+            totalAmountToPay += dish.getPrice();
 
             // Track ingredient usage for stock validation
             for (Ingredient ingredient : dish.getIngredients()) {
@@ -69,6 +71,7 @@ public class OrderService {
             }
         }
 
+        // Validate and update ingredient stock
         for (Map.Entry<Long, Integer> entry : ingredientUsage.entrySet()) {
             Ingredient ingredient = ingredientRepository.findById(entry.getKey())
                     .orElseThrow(() -> new ResourceNotFoundException("Ingredient not found: " + entry.getKey()));
@@ -76,26 +79,31 @@ public class OrderService {
             if (ingredient.getStock() < entry.getValue()) {
                 throw new UnavailableException("Not enough stock for ingredient: " + ingredient.getName());
             }
+
             ingredient.setStock(ingredient.getStock() - entry.getValue());
             ingredientRepository.save(ingredient);
         }
 
-        // Round totalAmountToPay to 2 decimals
+        // Round totalAmountToPay to 2 decimal places
         BigDecimal roundedAmountToPay = BigDecimal.valueOf(totalAmountToPay).setScale(2, RoundingMode.HALF_UP);
-
         order.setAmountToPay(roundedAmountToPay.doubleValue());
+
+        // Set Dishes to the Order
         order.setDishes(dishesToAdd);
+
+        // Save Order (this persists the relationship in the order_dish table)
         order = orderRepository.save(order);
 
+        // Convert Dishes to DTOs for Response
         List<DishDTO> dishesToReturn = dishesToAdd
                 .stream()
                 .map(dish -> new DishDTO(dish.getId(), dish.getName(), dish.getPrice(), dish.isAvailable(), dish.getIngredients()
                         .stream()
                         .map(ingredient -> new IngredientForDishDTO(ingredient.getId(), ingredient.getName()))
                         .collect(Collectors.toList())))
-                .toList();
+                .collect(Collectors.toList());
 
-        // Return the DTO
+        // Return OrderDTO
         return new OrderDTO(
                 order.getId(),
                 null,
@@ -122,6 +130,7 @@ public class OrderService {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
 
+        // Update status
         Status statusEnum = mapToStatus(status);
         order.setStatus(statusEnum);
         order = orderRepository.save(order);
@@ -139,13 +148,14 @@ public class OrderService {
         List<Order> orders = orderRepository.findAll();
         Map<Dish, Integer> dishCount = new HashMap<>();
 
+        // Count orders per dish
         for (Order order : orders) {
             for (Dish dish : order.getDishes()) {
                 dishCount.put(dish, dishCount.getOrDefault(dish, 0) + 1);
             }
         }
 
-        // Sort by count in descending order, limit to top 5, and map to DishTopDTO with positions
+        // Sort dishes and get top 5
         AtomicInteger positionCounter = new AtomicInteger(1);
         return dishCount.entrySet()
                 .stream()
