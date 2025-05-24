@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -65,13 +66,14 @@ public class OrderController {
     }
 
 
-    @Operation(summary = "Get top 5 most ordered dishes")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Top 5 most ordered dishes retrieved successfully")
-    })
     @GetMapping("/top-dishes")
-    public ResponseEntity<?> getTop5MostOrderedDishes() {
-            List<DishTopDTO> dishes  = orderService.getTop5MostOrderedDishes();
-            return ResponseEntity.status(HttpStatus.OK).body(dishes);
+    public ResponseEntity<Page<DishTopDTO>> getTopOrderedDishes(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "orderCount") String sortBy,
+            @RequestParam(defaultValue = "desc") String direction) {
+
+        Page<DishTopDTO> topDishes = orderService.getTopOrderedDishes(page, size, sortBy, direction);
+        return ResponseEntity.ok(topDishes);
     }
 }

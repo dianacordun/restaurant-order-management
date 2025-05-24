@@ -9,6 +9,7 @@ import com.unibuc.java_project.repository.OrderRepository;
 import com.unibuc.java_project.repository.IngredientRepository;
 import com.unibuc.java_project.repository.DishRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,10 @@ import java.math.RoundingMode;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort; // Import necessary classes
+
 
 @Service
 public class OrderService {
@@ -167,6 +172,49 @@ public class OrderService {
 
         return new OrderDTO(order.getId(), paymentDTO, dishDTOs, order.getStatus().toString(), order.getAmountToPay());
     }
+
+    public Page<DishTopDTO> getTopOrderedDishes(int page, int size, String sortBy, String direction) {
+        List<Order> orders = orderRepository.findAll();
+        Map<Dish, Integer> dishCount = new HashMap<>();
+
+        // Count orders per dish
+        for (Order order : orders) {
+            for (Dish dish : order.getDishes()) {
+                dishCount.put(dish, dishCount.getOrDefault(dish, 0) + 1);
+            }
+        }
+
+        // Sort dishes and generate a ranked result list
+        List<DishTopDTO> rankedDishes = dishCount.entrySet()
+                .stream()
+                .sorted((entry1, entry2) ->
+                        direction.equalsIgnoreCase("asc")
+                                ? entry1.getValue().compareTo(entry2.getValue())
+                                : entry2.getValue().compareTo(entry1.getValue()))
+                .map(entry -> new DishTopDTO(
+                        0, // Rank will be set later
+                        entry.getValue(),
+                        entry.getKey().getId(),
+                        entry.getKey().getName(),
+                        entry.getKey().getPrice()
+                ))
+                .collect(Collectors.toList());
+
+        // Set rank on the top dishes
+        AtomicInteger positionCounter = new AtomicInteger(1);
+        rankedDishes.forEach(dish -> dish.setRank(positionCounter.getAndIncrement()));
+
+        // Convert to a pageable list using subList
+        int start = Math.min(page * size, rankedDishes.size());
+        int end = Math.min((page + 1) * size, rankedDishes.size());
+
+        return new PageImpl<>(
+                rankedDishes.subList(start, end),
+                PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(direction), sortBy)),
+                rankedDishes.size()
+        );
+    }
+
     public List<DishTopDTO> getTop5MostOrderedDishes() {
         List<Order> orders = orderRepository.findAll();
         Map<Dish, Integer> dishCount = new HashMap<>();

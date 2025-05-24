@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Top 5 Most Ordered Dishes</title>
+    <title>Top Ordered Dishes</title>
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" />
 </head>
 <body>
 <div class="container mt-5">
-    <h1>Top 5 Most Ordered Dishes</h1>
+    <h1>Top Ordered Dishes</h1>
 
+    <!-- Display Dishes -->
     <ul class="list-group mt-4">
         <li class="list-group-item" th:each="dish : ${topDishes}">
             <span th:text="'Rank #' + ${dish.rank}"></span>:
@@ -16,6 +17,44 @@
             - <span th:text="'Price: $' + ${dish.price}"></span>
         </li>
     </ul>
+
+    <!-- Pagination Controls -->
+    <nav th:if="${totalPages > 1}" class="mt-4">
+        <ul class="pagination">
+            <li th:classappend="${currentPage == 0} ? 'disabled'" class="page-item">
+                <a class="page-link"
+                   th:href="@{'/orders/top-dishes'(page=${currentPage - 1}, size=5, sortBy=${sortBy}, direction=${direction})}">
+                    Previous
+                </a>
+            </li>
+            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                th:classappend="${i == currentPage} ? 'active'">
+                <a class="page-link"
+                   th:href="@{'/orders/top-dishes'(page=${i}, size=5, sortBy=${sortBy}, direction=${direction})}"
+                   th:text="${i + 1}">
+                </a>
+            </li>
+            <li th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'" class="page-item">
+                <a class="page-link"
+                   th:href="@{'/orders/top-dishes'(page=${currentPage + 1}, size=5, sortBy=${sortBy}, direction=${direction})}">
+                    Next
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Sorting Controls -->
+    <div class="mt-4">
+        <label for="sortBy">Sort By:</label>
+        <select id="sortBy" class="form-select" onchange="location = this.value">
+            <option th:value="@{'/orders/top-dishes'(page=0, size=5, sortBy='orderCount', direction='desc')}"
+                    th:selected="${sortBy == 'orderCount' and direction == 'desc'}">Most Ordered</option>
+            <option th:value="@{'/orders/top-dishes'(page=0, size=5, sortBy='price', direction='asc')}"
+                    th:selected="${sortBy == 'price' and direction == 'asc'}">Price (Low to High)</option>
+            <option th:value="@{'/orders/top-dishes'(page=0, size=5, sortBy='price', direction='desc')}"
+                    th:selected="${sortBy == 'price' and direction == 'desc'}">Price (High to Low)</option>
+        </select>
+    </div>
 
     <a href="/orders" class="btn btn-primary mt-4">Back to Orders</a>
 </div>

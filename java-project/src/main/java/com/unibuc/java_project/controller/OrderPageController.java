@@ -9,6 +9,7 @@ import com.unibuc.java_project.model.PaymentMethod;
 import com.unibuc.java_project.service.OrderService; // Import the service
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -38,17 +39,39 @@ public class OrderPageController {
 
 
 
+//    @GetMapping("/top-dishes")
+//    public String showTopDishesPage(Model model) {
+//        // Fetch the top dishes from the service
+//        List<DishTopDTO> topDishes = orderService.getTop5MostOrderedDishes();
+//
+//        // Add the list to the Thymeleaf model
+//        model.addAttribute("topDishes", topDishes);
+//
+//        // Return the name of the Thymeleaf template to be rendered
+//        return "topDishes";
+//    }
     @GetMapping("/top-dishes")
-    public String showTopDishesPage(Model model) {
-        // Fetch the top dishes from the service
-        List<DishTopDTO> topDishes = orderService.getTop5MostOrderedDishes();
+    public String showTopDishesPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "orderCount") String sortBy,
+            @RequestParam(defaultValue = "desc") String direction,
+            Model model) {
 
-        // Add the list to the Thymeleaf model
-        model.addAttribute("topDishes", topDishes);
+        // Fetch paginated and sorted dishes from the service
+        Page<DishTopDTO> topDishesPage = orderService.getTopOrderedDishes(page, size, sortBy, direction);
 
-        // Return the name of the Thymeleaf template to be rendered
+        // Add to the model
+        model.addAttribute("topDishes", topDishesPage.getContent());
+        model.addAttribute("currentPage", topDishesPage.getNumber());
+        model.addAttribute("totalPages", topDishesPage.getTotalPages());
+        model.addAttribute("sortBy", sortBy);
+        model.addAttribute("direction", direction);
+
+        // Render the view
         return "topDishes";
     }
+
 
 
 
