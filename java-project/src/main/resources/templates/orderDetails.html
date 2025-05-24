@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Order Details</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" />
+</head>
+<body>
+<div class="container mt-5">
+    <h1>Order Details</h1>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title mb-4">Order #<span th:text="${order.id}"></span></h5>
+
+            <!-- Status -->
+            <div class="mb-3">
+                <strong>Status:</strong>
+                <span th:text="${order.status}" class="badge bg-primary ms-2"></span>
+            </div>
+
+            <!-- Amount -->
+            <div class="mb-3">
+                <strong>Amount to Pay:</strong>
+                <span th:text="${'$' + #numbers.formatDecimal(order.amountToPay, 1, 2)}" class="ms-2"></span>
+            </div>
+
+            <!-- Payment Info -->
+            <div class="mb-3" th:if="${order.payment != null}">
+                <strong>Payment Information:</strong>
+                <div class="ms-3 mt-2">
+                    <p class="mb-1">Amount Paid: <span th:text="${'$' + #numbers.formatDecimal(order.payment.amountPaid, 1, 2)}"></span></p>
+                    <p class="mb-1">Method: <span th:text="${order.payment.method}"></span></p>
+                </div>
+            </div>
+
+            <!-- Dishes -->
+            <div class="mb-3">
+                <strong>Ordered Dishes:</strong>
+                <div class="table-responsive mt-2">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Ingredients</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="dish : ${order.dishes}">
+                            <td th:text="${dish.name}"></td>
+                            <td th:text="${'$' + #numbers.formatDecimal(dish.price, 1, 2)}"></td>
+                            <td>
+                                    <span th:each="ingredient, iterStat : ${dish.ingredients}">
+                                        <span th:text="${ingredient.name}"></span>
+                                        <span th:if="${!iterStat.last}">, </span>
+                                    </span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <a href="/orders" class="btn btn-primary mt-3">Back to Orders</a>
+</div>
+</body>
+</html>

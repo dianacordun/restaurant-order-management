@@ -1,7 +1,55 @@
-<form action="/orders/get" method="post">
+
+<div id="error-message" class="alert alert-danger" style="display: none;"></div>
+
+<form id="getOrderForm" action="#" onsubmit="return handleGetOrder(event)">
     <div class="form-group">
         <label for="orderId">Order ID</label>
         <input type="number" name="orderId" class="form-control" id="orderId" required>
+        <small id="orderIdHelp" class="form-text text-danger" style="display: none;"></small>
     </div>
-    <button type="submit" class="btn btn-primary">Get Order</button>
+    <button type="submit" class="btn btn-primary mt-3">Get Order</button>
 </form>
+
+<script>
+    let orderExists = false;
+
+    function handleGetOrder(event) {
+        event.preventDefault();
+        const orderId = document.getElementById('orderId').value;
+        const errorMessage = document.getElementById('error-message');
+
+        if (!orderExists) {
+            errorMessage.style.display = 'block';
+            errorMessage.textContent = 'Please enter a valid order ID';
+            return false;
+        }
+
+        if (orderId) {
+            window.location.href = `/orders/${orderId}`;
+        }
+        return false;
+    }
+
+    document.getElementById('orderId').addEventListener('change', function() {
+        const orderId = this.value;
+        const errorHelp = document.getElementById('orderIdHelp');
+        const errorMessage = document.getElementById('error-message');
+
+        if (orderId) {
+            fetch(`/orders/check/${orderId}`)
+                .then(response => response.json())
+                .then(exists => {
+                    orderExists = exists;
+                    if (!exists) {
+                        errorHelp.style.display = 'block';
+                        errorMessage.style.display = 'block';
+                        errorHelp.textContent = `Order with ID ${orderId} does not exist`;
+                        errorMessage.textContent = 'Please enter a valid order ID';
+                    } else {
+                        errorHelp.style.display = 'none';
+                        errorMessage.style.display = 'none';
+                    }
+                });
+        }
+    });
+</script>

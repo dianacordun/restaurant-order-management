@@ -1,11 +1,71 @@
-<form action="/orders/place" method="post" th:object="${orderDTO}">
-    <div class="form-group">
-        <label for="dishes">Dishes</label>
-        <input type="text" th:field="*{dishes}" class="form-control" id="dishes" required>
+<div id="message" class="alert mt-3" style="display: none;"></div>
+
+<form id="placeOrderForm" action="/orders/place" method="post">
+    <div class="form-group mb-3">
+        <label for="dishes">Dishes (comma-separated)</label>
+        <input type="text" class="form-control" id="dishes" name="dishes" required>
+        <small class="form-text text-muted">Enter dish names separated by commas (e.g., "Pizza, Pasta, Salad")</small>
+        <small id="dishesHelp" class="form-text text-danger" style="display: none;"></small>
     </div>
-    <div class="form-group">
+    <div class="form-group mb-3">
         <label for="clientId">Client ID</label>
-        <input type="number" th:field="*{clientId}" class="form-control" id="clientId">
+        <input type="number" class="form-control" id="clientId" name="clientId">
+        <small id="clientHelp" class="form-text text-danger" style="display: none;"></small>
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
+
+<script>
+    document.getElementById('placeOrderForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const dishes = document.getElementById('dishes').value.split(',').map(d => d.trim());
+        const clientId = document.getElementById('clientId').value;
+        const messageDiv = document.getElementById('message');
+        const dishesHelp = document.getElementById('dishesHelp');
+        const clientHelp = document.getElementById('clientHelp');
+
+        // Reset help messages
+        dishesHelp.style.display = 'none';
+        clientHelp.style.display = 'none';
+        messageDiv.style.display = 'none';
+
+        fetch('/orders/place', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                dishes: dishes,
+                clientId: clientId ? parseInt(clientId) : null
+            })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => { throw new Error(text) });
+                }
+                return response.json();
+            })
+            .then(data => {
+                messageDiv.className = 'alert alert-success mt-3';
+                messageDiv.textContent = 'Order placed successfully!';
+                messageDiv.style.display = 'block';
+                document.getElementById('placeOrderForm').reset();
+            })
+            .catch(error => {
+                messageDiv.className = 'alert alert-danger mt-3';
+                const errorMessage = error.message;
+
+                if (errorMessage.includes('Dish not found')) {
+                    dishesHelp.textContent = 'One or more dishes do not exist';
+                    dishesHelp.style.display = 'block';
+                } else if (errorMessage.includes('Client not found')) {
+                    clientHelp.textContent = 'Client does not exist';
+                    clientHelp.style.display = 'block';
+                }
+
+                messageDiv.textContent = 'Error placing order: ' + errorMessage;
+                messageDiv.style.display = 'block';
+            });
+    });
+</script>

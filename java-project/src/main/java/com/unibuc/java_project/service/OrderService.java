@@ -10,6 +10,7 @@ import com.unibuc.java_project.repository.IngredientRepository;
 import com.unibuc.java_project.repository.DishRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -32,7 +33,9 @@ public class OrderService {
     @Autowired
     private ClientRepository clientRepository;
 
+    @Transactional
     public OrderDTO placeOrder(OrderToPlaceDTO orderDTO) {
+
         Order order = new Order();
         order.setStatus(Status.PLACED);
 

@@ -1,7 +1,10 @@
-<form action="/orders/update" method="post">
+<div id="error-message" class="alert alert-danger" style="display: none;"></div>
+
+<form id="updateOrderForm" action="/orders/update" method="post">
     <div class="form-group">
         <label for="orderId">Order ID</label>
         <input type="number" name="orderId" class="form-control" id="orderId" required>
+        <small id="orderIdHelp" class="form-text text-danger" style="display: none;">Order ID does not exist</small>
     </div>
     <div class="form-group">
         <label for="status">Status</label>
@@ -13,3 +16,34 @@
     </div>
     <button type="submit" class="btn btn-primary">Update Order</button>
 </form>
+
+<script>
+    let orderExists = false;
+
+    document.getElementById('orderId').addEventListener('change', function() {
+        const orderId = this.value;
+        const errorHelp = document.getElementById('orderIdHelp');
+
+        if (orderId) {
+            fetch(`/orders/check/${orderId}`)
+                .then(response => response.json())
+                .then(exists => {
+                    orderExists = exists;
+                    if (!exists) {
+                        errorHelp.style.display = 'block';
+                        errorHelp.textContent = `Order with ID ${orderId} does not exist`;
+                    } else {
+                        errorHelp.style.display = 'none';
+                    }
+                });
+        }
+    });
+
+    document.getElementById('updateOrderForm').addEventListener('submit', function(e) {
+        if (!orderExists) {
+            e.preventDefault();
+            document.getElementById('error-message').style.display = 'block';
+            document.getElementById('error-message').textContent = 'Please enter a valid order ID';
+        }
+    });
+</script>
