@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Login</title>
+    <title>Sign Up</title>
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" />
 </head>
 <body>
 <div class="container mt-5">
-    <h2>Please Login</h2>
-    <form th:action="@{/login}" method="post" class="mt-4">
+    <h2>Create a New Account</h2>
+    <form th:action="@{/signup}" method="post" class="mt-4">
         <div class="form-group mb-3">
             <label for="username">Username</label>
             <input type="text" id="username" name="username" class="form-control" required />
@@ -16,18 +16,13 @@
             <label for="password">Password</label>
             <input type="password" id="password" name="password" class="form-control" required />
         </div>
-        <button type="submit" class="btn btn-primary">Login</button>
+        <div class="form-group mb-3">
+            <label for="confirmPassword">Confirm Password</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required />
+        </div>
+        <button type="submit" class="btn btn-primary">Sign Up</button>
+        <a th:href="@{/login}" class="btn btn-secondary">Cancel</a>
     </form>
-    <div th:if="${param.error}" class="alert alert-danger mt-3">
-        Invalid username or password. Please try again.
-    </div>
-    <div th:if="${param.logout}" class="alert alert-success mt-3">
-        You have been logged out successfully.
-    </div>
-    <div class="container mt-5">
-        <p>Don't have an account? <a th:href="@{/signup}">Sign up here</a>.</p>
-    </div>
-
 </div>
 </body>
 </html>
