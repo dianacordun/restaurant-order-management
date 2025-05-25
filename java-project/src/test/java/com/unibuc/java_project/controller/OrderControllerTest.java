@@ -12,6 +12,10 @@ import com.unibuc.java_project.service.OrderService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -101,19 +105,34 @@ public class OrderControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andExpect(MockMvcResultMatchers.content().string(containsString("Order not found")));
     }
-
+    
     @Test
     void testGetTop5MostOrderedDishes() throws Exception {
-        // Simulate response
-        when(orderService.getTop5MostOrderedDishes()).thenReturn(Arrays.asList(
+        List<DishTopDTO> dishes = Arrays.asList(
                 new DishTopDTO(1, 10, 1L, "Dish1", 20.0),
                 new DishTopDTO(2, 8, 2L, "Dish2", 15.0)
-        ));
+        );
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/orders/top-dishes"))
+        Page<DishTopDTO> page = new PageImpl<>(
+                dishes,
+                PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "orderCount")),
+                dishes.size()
+        );
+
+        when(orderService.getTopOrderedDishes(0, 5, "orderCount", "desc"))
+                .thenReturn(page);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/orders/top-dishes")
+                        .param("page", "0")
+                        .param("size", "5")
+                        .param("sortBy", "orderCount")
+                        .param("direction", "desc"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value("Dish1"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].name").value("Dish2"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].name").value("Dish1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].name").value("Dish2"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value(2))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.size").value(5))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.number").value(0));
     }
 
     @Test
