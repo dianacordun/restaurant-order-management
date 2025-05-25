@@ -1,24 +1,21 @@
 package com.unibuc.java_project.controller;
 
+import com.unibuc.java_project.model.User;
+import com.unibuc.java_project.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
+import java.util.List;
 
 @Controller
 public class LoginController {
 
     @Autowired
-    private DataSource dataSource;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private UserService userService;
 
     @GetMapping("/login")
     public String login() {
@@ -26,47 +23,29 @@ public class LoginController {
     }
 
     @GetMapping("/signup")
-    public String signupForm() {
+    public String signupForm(Model model) {
+        model.addAttribute("user", new User());
         return "signup";
     }
 
     @PostMapping("/signup")
     public String registerUser(
-            @RequestParam("username") String username,
-            @RequestParam("password") String password,
-            @RequestParam("confirmPassword") String confirmPassword) {
+            @ModelAttribute("user") @Valid User user,
+            BindingResult bindingResult,
+            Model model) {
 
-        // Validare parole
-        if (!password.equals(confirmPassword)) {
-            throw new IllegalArgumentException("Passwords do not match");
+        if (bindingResult.hasErrors()) {
+            return "signup";
         }
 
-        // Criptare parolă
-        String encodedPassword = passwordEncoder.encode(password);
-
-        // Salvează utilizatorul în baza de date
-        try (Connection connection = dataSource.getConnection()) {
-            // Inserare în tabelul `users`
-            String insertUserQuery = "INSERT INTO users (username, password, enabled) VALUES (?, ?, ?)";
-            try (PreparedStatement userStmt = connection.prepareStatement(insertUserQuery)) {
-                userStmt.setString(1, username);
-                userStmt.setString(2, encodedPassword);
-                userStmt.setBoolean(3, true);
-                userStmt.executeUpdate();
+        List<String> serviceErrors = userService.registerUser(user);
+        if (!serviceErrors.isEmpty()) {
+            for (String err : serviceErrors) {
+                bindingResult.reject("0", err);
             }
-
-            // Inserare în tabelul `authorities`
-            String insertRoleQuery = "INSERT INTO authorities (username, authority) VALUES (?, ?)";
-            try (PreparedStatement roleStmt = connection.prepareStatement(insertRoleQuery)) {
-                roleStmt.setString(1, username);
-                roleStmt.setString(2, "ROLE_USER"); // Adăugăm un rol implicit
-                roleStmt.executeUpdate();
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Error while registering user", e);
+            return "signup";
         }
 
-        // Redirect către login după succes
         return "redirect:/login?signupSuccess=true";
     }
 }
