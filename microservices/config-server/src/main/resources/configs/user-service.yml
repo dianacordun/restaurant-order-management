@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: user-service
+  datasource:
+    url: jdbc:h2:mem:userdb
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+  # Spring Security default user (doar pentru testare)
+  security:
+    user:
+      name: admin
+      password: admin123
+      roles: ADMIN
+
+server:
+  port: 8081
+
+# Configurări specifice pentru security
+security:
+  jwt:
+    secret: mySecretKey
+    expiration: 86400
+
+# Descriere serviciu
+info:
+  app:
+    name: User Management Service
+    description: Manages users, clients and reservations
+    version: 1.0.0

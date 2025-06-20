@@ -1,0 +1,3 @@
+com\unibuc\userservice\config\SecurityConfig.class
+com\unibuc\userservice\controller\UserController.class
+com\unibuc\userservice\UserServiceApplication.class
