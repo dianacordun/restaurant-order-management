@@ -24,3 +24,15 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+# Eureka client configuration comune
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 30
+    lease-expiration-duration-in-seconds: 90
