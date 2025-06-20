@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: menu-service
+  datasource:
+    url: jdbc:h2:mem:menudb
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+
+server:
+  port: 8082
+
+# Configurări specifice pentru business logic
+restaurant:
+  menu:
+    max-dishes-per-order: 10
+    currency: RON
+  orders:
+    timeout-minutes: 30
+
+# Descriere serviciu
+info:
+  app:
+    name: Menu Management Service
+    description: Manages dishes, ingredients, orders and payments
+    version: 1.0.0
