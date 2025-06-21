@@ -45,7 +45,7 @@ public class ClientController {
 
     @PostMapping
     public ResponseEntity<Client> createClient(@RequestBody Client client) {
-        Client savedClient = clientService.saveClient(client);
+        Client savedClient = clientService.createClient(client);
         return ResponseEntity.ok(savedClient);
     }
 
@@ -54,7 +54,7 @@ public class ClientController {
         if (!clientService.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
-        Client updatedClient = clientService.saveClient(client);
+        Client updatedClient = clientService.updateClient(id, client);
         return ResponseEntity.ok(updatedClient);
     }
 
