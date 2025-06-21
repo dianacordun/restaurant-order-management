@@ -1,3 +1,9 @@
-com\unibuc\menuservice\client\UserServiceClient.class
-com\unibuc\menuservice\MenuServiceApplication.class
 com\unibuc\menuservice\controller\MenuController.class
+com\unibuc\menuservice\client\UserServiceClient.class
+com\unibuc\menuservice\model\Dish.class
+com\unibuc\menuservice\MenuServiceApplication.class
+com\unibuc\menuservice\model\Order.class
+com\unibuc\menuservice\model\Payment.class
+com\unibuc\menuservice\model\Ingredient.class
+com\unibuc\menuservice\model\PaymentMethod.class
+com\unibuc\menuservice\model\Status.class
