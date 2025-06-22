@@ -10,17 +10,16 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-        // COMMENT/UNCOMMENT această metodă pentru a controla autentificarea:
-
+    // Configurare pentru autentificare cu plain text passwords (pentru testare)
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/api/**").permitAll()      // Allow all API endpoints
                 .requestMatchers("/actuator/**").permitAll() // Allow actuator endpoints
                 .requestMatchers("/h2-console/**").permitAll() // Allow H2 console
-                .anyRequest().authenticated()
+                .anyRequest().authenticated() // Require authentication for all other endpoints
             )
+            .httpBasic(httpBasic -> {}) // Enable HTTP Basic Authentication
             .csrf(csrf -> csrf
                 .ignoringRequestMatchers("/h2-console/**") // Disable CSRF for H2 console
                 .disable() // Disable CSRF for API endpoints (for testing)
@@ -32,7 +31,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // Pentru autentificare completă, șterge metoda de mai sus și
-    // configurarea din user-service.yml va seta username=admin, password=admin123
-
+    // PasswordEncoder bean este deja definit în PasswordConfig.java
+    // Configurarea din user-service.yml va seta username=admin, password=admin123
 }

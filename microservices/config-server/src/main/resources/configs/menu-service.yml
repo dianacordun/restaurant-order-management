@@ -14,7 +14,7 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
 
 server:
-  port: 8082
+  port: ${SERVER_PORT:8082}  # PORT DINAMIC PENTRU LOAD BALANCING
 
 # Eureka Client Configuration
 eureka:
@@ -26,6 +26,9 @@ eureka:
   instance:
     prefer-ip-address: true
     instance-id: ${spring.application.name}:${random.value}
+    # Configurare pentru porturi dinamice
+    non-secure-port-enabled: true
+    secure-port-enabled: false
 
 # Monitoring and Metrics Configuration
 management:

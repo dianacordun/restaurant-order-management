@@ -54,12 +54,9 @@ services:
       - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
       - SPRING_APPLICATION_NAME=user-service
       - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka/
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
+      - SERVER_PORT=0  # PORT DINAMIC PENTRU LOAD BALANCING
+    # Health check removed because service uses dynamic ports and is not exposed on host
+    # Services are accessible through Gateway and monitored via Eureka
 
   # Menu Service
   menu-service:
@@ -77,12 +74,9 @@ services:
       - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
       - SPRING_APPLICATION_NAME=menu-service
       - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka/
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
+      - SERVER_PORT=0  # PORT DINAMIC PENTRU LOAD BALANCING
+    # Health check removed because service uses dynamic ports and is not exposed on host
+    # Services are accessible through Gateway and monitored via Eureka
 
   # Gateway Service
   gateway-service:
