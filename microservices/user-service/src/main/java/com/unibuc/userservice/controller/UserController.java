@@ -1,14 +1,17 @@
 package com.unibuc.userservice.controller;
 
 import com.unibuc.userservice.client.MenuServiceClient;
+import com.unibuc.userservice.model.User;
+import com.unibuc.userservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
@@ -16,6 +19,9 @@ public class UserController {
 
     @Autowired
     private MenuServiceClient menuServiceClient;
+
+    @Autowired
+    private UserService userService;
 
     @Value("${spring.application.name}")
     private String applicationName;
@@ -63,4 +69,45 @@ public class UserController {
         return result;
     }
 
+    // User management endpoints
+    @GetMapping
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/{username}")
+    public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
+        Optional<User> user = userService.getUserByUsername(username);
+        return user.map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping
+    public ResponseEntity<User> createUser(@RequestBody User user) {
+        if (userService.existsByUsername(user.getUsername())) {
+            return ResponseEntity.badRequest().build();
+        }
+        User savedUser = userService.saveUser(user);
+        return ResponseEntity.ok(savedUser);
+    }
+
+    @PutMapping("/{username}")
+    public ResponseEntity<User> updateUser(@PathVariable String username, @RequestBody User user) {
+        if (!userService.existsByUsername(username)) {
+            return ResponseEntity.notFound().build();
+        }
+        user.setUsername(username);
+        User updatedUser = userService.saveUser(user);
+        return ResponseEntity.ok(updatedUser);
+    }
+
+    @DeleteMapping("/{username}")
+    public ResponseEntity<Void> deleteUser(@PathVariable String username) {
+        if (!userService.existsByUsername(username)) {
+            return ResponseEntity.notFound().build();
+        }
+        userService.deleteUser(username);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -1,6 +1,8 @@
 package com.unibuc.menuservice.controller;
 
 import com.unibuc.menuservice.client.UserServiceClient;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,8 +31,25 @@ public class MenuController {
     @Value("${restaurant.menu.currency:EUR}")
     private String currency;
 
+    private final Counter infoEndpointCounter;
+    private final Counter healthCheckCounter;
+    private final Counter communicationCounter;
+
+    public MenuController(MeterRegistry meterRegistry) {
+        this.infoEndpointCounter = Counter.builder("menu_info_requests_total")
+                .description("Total number of menu info requests")
+                .register(meterRegistry);
+        this.healthCheckCounter = Counter.builder("menu_health_check_requests_total")
+                .description("Total number of menu health check requests")
+                .register(meterRegistry);
+        this.communicationCounter = Counter.builder("menu_user_communication_requests_total")
+                .description("Total number of menu-user service communication requests")
+                .register(meterRegistry);
+    }
+
     @GetMapping("/info")
     public Map<String, Object> getServiceInfo() {
+        infoEndpointCounter.increment();
         Map<String, Object> info = new HashMap<>();
         info.put("service", applicationName);
         info.put("port", serverPort);
@@ -42,6 +61,7 @@ public class MenuController {
 
     @GetMapping("/health-check")
     public Map<String, String> healthCheck() {
+        healthCheckCounter.increment();
         Map<String, String> health = new HashMap<>();
         health.put("service", applicationName);
         health.put("status", "UP");
@@ -51,6 +71,7 @@ public class MenuController {
 
     @GetMapping("/communicate-with-user")
     public Map<String, Object> communicateWithUserService() {
+        communicationCounter.increment();
         Map<String, Object> result = new HashMap<>();
         result.put("caller", "menu-service");
         result.put("message", "Successfully communicating with user-service via Eureka!");
