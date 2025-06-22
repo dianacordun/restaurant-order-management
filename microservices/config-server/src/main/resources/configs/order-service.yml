@@ -36,23 +36,27 @@ server:
 eureka:
   client:
     service-url:
-      defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE:http://eureka-server:8761/eureka/}
+      defaultZone: http://eureka-server:8761/eureka/
     register-with-eureka: true
     fetch-registry: true
   instance:
     prefer-ip-address: true
     instance-id: ${spring.application.name}:${random.value}
+    # Configurare pentru porturi dinamice
+    non-secure-port-enabled: true
+    secure-port-enabled: false
 
 # Monitoring and Metrics Configuration
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics,prometheus
+        include: health,info,metrics,prometheus,env,configprops
       base-path: /actuator
   endpoint:
     health:
       show-details: always
+      show-components: always
     metrics:
       enabled: true
     prometheus:
@@ -64,18 +68,37 @@ management:
     tags:
       application: ${spring.application.name}
       environment: docker
+  health:
+    defaults:
+      enabled: true
+    db:
+      enabled: true
+    diskspace:
+      enabled: true
 
 # Logging Configuration
 logging:
   level:
     com.unibuc: INFO
     org.springframework.web: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# Configurări specifice pentru business logic
+restaurant:
+  orders:
+    max-items-per-order: 20
+    timeout-minutes: 30
+    currency: RON
+  processing:
+    async-enabled: true
 
 # Service Info
 info:
   app:
     name: Order Management Service
-    description: Handles order processing and management
+    description: Manages restaurant orders and order processing
     version: 1.0.0
