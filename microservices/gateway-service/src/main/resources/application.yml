@@ -1,27 +1,71 @@
 spring:
   application:
     name: gateway-service
+  config:
+    import: "optional:configserver:http://config-server:8888"
   cloud:
     config:
       uri: http://config-server:8888
-    gateway:
-      discovery:
-        locator:
-          enabled: true
-      routes:
-        - id: user-service
-          uri: lb://user-service
-          predicates:
-            - Path=/api/users/**
-        - id: menu-service
-          uri: lb://menu-service
-          predicates:
-            - Path=/api/menu/**
+      enabled: true
 
+# Fallback configuration (will be overridden by Config Server)
 server:
   port: 8080
 
+# Eureka Client Configuration
 eureka:
   client:
     service-url:
-      defaultZone: http://eureka-server:8761/eureka/
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE:http://localhost:8761/eureka/}
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${random.value}
+
+# Monitoring and Metrics Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,env,configprops,gateway
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+    gateway:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: ${spring.application.name}
+      environment: docker
+  health:
+    defaults:
+      enabled: true
+    diskspace:
+      enabled: true
+
+# Logging Configuration
+logging:
+  level:
+    com.unibuc: INFO
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.web: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# Descriere serviciu
+info:
+  app:
+    name: API Gateway Service
+    description: API Gateway for Restaurant Microservices
+    version: 1.0.0

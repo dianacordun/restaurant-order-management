@@ -1,5 +1,6 @@
 package com.unibuc.userservice.service;
 
+import com.unibuc.userservice.dto.ClientDTO;
 import com.unibuc.userservice.model.Client;
 import com.unibuc.userservice.repository.ClientRepository;
 import io.micrometer.core.instrument.Counter;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ClientService {
@@ -28,14 +30,17 @@ public class ClientService {
                 .register(meterRegistry);
     }
 
-    public List<Client> getAllClients() {
+    public List<ClientDTO> getAllClients() {
         clientRetrievedCounter.increment();
-        return clientRepository.findAll();
+        List<Client> clients = clientRepository.findAll();
+        return clients.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
-    public Optional<Client> getClientById(Long id) {
+    public ClientDTO getClientById(Long id) {
         clientRetrievedCounter.increment();
-        return clientRepository.findById(id);
+        Client client = clientRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Client not found with id: " + id));
+        return convertToDTO(client);
     }
 
     public Optional<Client> getClientByEmail(String email) {
@@ -46,28 +51,77 @@ public class ClientService {
         return clientRepository.findByPhoneNumber(phoneNumber);
     }
 
-    public Client createClient(Client client) {
+    public ClientDTO addClient(ClientDTO clientDTO) {
+        // Check if email already exists
+        if (clientDTO.getEmail() != null && clientRepository.existsByEmail(clientDTO.getEmail())) {
+            throw new RuntimeException("Client with email '" + clientDTO.getEmail() + "' already exists");
+        }
+
+        // Check if phone number already exists
+        if (clientRepository.existsByPhoneNumber(clientDTO.getPhoneNumber())) {
+            throw new RuntimeException("Client with phone number '" + clientDTO.getPhoneNumber() + "' already exists");
+        }
+
+        Client client = new Client();
+        client.setName(clientDTO.getName());
+        client.setPhoneNumber(clientDTO.getPhoneNumber());
+        client.setEmail(clientDTO.getEmail());
+
         Client savedClient = clientRepository.save(client);
         clientCreatedCounter.increment();
-        return savedClient;
+        return convertToDTO(savedClient);
     }
 
-    public Client updateClient(Long id, Client clientDetails) {
-        return clientRepository.findById(id)
-                .map(client -> {
-                    client.setName(clientDetails.getName());
-                    client.setEmail(clientDetails.getEmail());
-                    client.setPhoneNumber(clientDetails.getPhoneNumber());
-                    return clientRepository.save(client);
-                })
-                .orElseThrow(() -> new RuntimeException("Client not found"));
+    public ClientDTO updateClient(Long id, ClientDTO clientDTO) {
+        Client client = clientRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Client not found with id: " + id));
+
+        // Check if email is being changed and if new email already exists
+        if (clientDTO.getEmail() != null && !clientDTO.getEmail().equals(client.getEmail())) {
+            if (clientRepository.existsByEmail(clientDTO.getEmail())) {
+                throw new RuntimeException("Client with email '" + clientDTO.getEmail() + "' already exists");
+            }
+        }
+
+        // Check if phone number is being changed and if new phone number already exists
+        if (!clientDTO.getPhoneNumber().equals(client.getPhoneNumber())) {
+            if (clientRepository.existsByPhoneNumber(clientDTO.getPhoneNumber())) {
+                throw new RuntimeException("Client with phone number '" + clientDTO.getPhoneNumber() + "' already exists");
+            }
+        }
+
+        client.setName(clientDTO.getName());
+        client.setPhoneNumber(clientDTO.getPhoneNumber());
+        client.setEmail(clientDTO.getEmail());
+
+        Client updatedClient = clientRepository.save(client);
+        return convertToDTO(updatedClient);
     }
 
     public void deleteClient(Long id) {
+        if (!clientRepository.existsById(id)) {
+            throw new RuntimeException("Client not found with id: " + id);
+        }
         clientRepository.deleteById(id);
     }
 
     public boolean existsById(Long id) {
         return clientRepository.existsById(id);
+    }
+
+    public ClientDTO findByEmail(String email) {
+        Client client = clientRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Client not found with email: " + email));
+        return convertToDTO(client);
+    }
+
+    public ClientDTO findByPhoneNumber(String phoneNumber) {
+        Client client = clientRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new RuntimeException("Client not found with phone number: " + phoneNumber));
+        return convertToDTO(client);
+    }
+
+    private ClientDTO convertToDTO(Client client) {
+        return new ClientDTO(client.getId(), client.getName(), client.getPhoneNumber(), client.getEmail());
     }
 }

@@ -1,39 +1,35 @@
-package com.unibuc.userservice.model;
+package com.unibuc.userservice.dto;
 
-import jakarta.persistence.*;
-import java.util.List;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
-import jakarta.validation.constraints.*;
+public class ClientDTO {
 
-@Entity
-@Table(name = "clients")
-public class Client {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     @NotBlank(message = "Name cannot be blank.")
     private String name;
 
-    @Column(nullable = false)
     @NotBlank(message = "Phone number cannot be blank.")
     @Pattern(regexp = "^\\+?\\d{10,15}$", message = "Phone number must be between 10 and 15 digits, optionally starting with a '+'")
     private String phoneNumber;
 
-    @Column(unique = true, nullable = true)
     @Email(message = "Email must be a valid email address")
     private String email;
 
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
-    private List<Reservation> reservations;
-
     // Constructors
-    public Client() {
+    public ClientDTO() {
     }
 
-    public Client(String name, String phoneNumber, String email) {
+    public ClientDTO(String name, String phoneNumber, String email) {
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+    }
+
+    public ClientDTO(Long id, String name, String phoneNumber, String email) {
+        this.id = id;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.email = email;
@@ -70,23 +66,5 @@ public class Client {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public List<Reservation> getReservations() {
-        return reservations;
-    }
-
-    public void setReservations(List<Reservation> reservations) {
-        this.reservations = reservations;
-    }
-
-    @Override
-    public String toString() {
-        return "Client{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", email='" + email + '\'' +
-                '}';
     }
 }

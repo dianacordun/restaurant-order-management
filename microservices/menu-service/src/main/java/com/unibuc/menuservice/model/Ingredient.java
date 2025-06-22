@@ -6,16 +6,8 @@ import jakarta.validation.constraints.*;
 import java.util.List;
 
 @Entity
+@Table(name = "ingredients")
 public class Ingredient {
-
-    public Ingredient() {
-    }
-
-    public Ingredient(Long id, String name) {
-        this.id = id;
-        this.name = name;
-        this.stock = 0;
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +26,38 @@ public class Ingredient {
     @ManyToMany(mappedBy = "ingredients")
     private List<Dish> dishes;
 
+    // Constructors
+    public Ingredient() {
+    }
+
+    public Ingredient(String name, Integer stock) {
+        this.name = name;
+        this.stock = stock;
+    }
+
+    public Ingredient(Long id, String name, Integer stock) {
+        this.id = id;
+        this.name = name;
+        this.stock = stock;
+    }
+
     // Getters & Setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public Integer getStock() {
         return stock;
     }
@@ -51,15 +74,12 @@ public class Ingredient {
         this.dishes = dishes;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Long getId() {
-        return id;
+    @Override
+    public String toString() {
+        return "Ingredient{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", stock=" + stock +
+                '}';
     }
 }

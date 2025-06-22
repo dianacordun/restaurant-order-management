@@ -12,11 +12,33 @@ spring:
         - id: user-service
           uri: lb://user-service
           predicates:
-            - Path=/api/users/**
+            - Path=/USER-SERVICE/api/users/**
+          filters:
+            - StripPrefix=1
+        - id: user-clients
+          uri: lb://user-service
+          predicates:
+            - Path=/USER-SERVICE/api/clients/**
+          filters:
+            - StripPrefix=1
         - id: menu-service
           uri: lb://menu-service
           predicates:
-            - Path=/api/menu/**
+            - Path=/MENU-SERVICE/api/menu/**
+          filters:
+            - StripPrefix=1
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/ORDER-SERVICE/api/orders/**
+          filters:
+            - StripPrefix=1
+        - id: payment-service
+          uri: lb://payment-service
+          predicates:
+            - Path=/PAYMENT-SERVICE/api/payments/**
+          filters:
+            - StripPrefix=1
 
 server:
   port: 8080

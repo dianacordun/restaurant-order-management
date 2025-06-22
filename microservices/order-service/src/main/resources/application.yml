@@ -1,6 +1,6 @@
 spring:
   application:
-    name: user-service
+    name: order-service
   config:
     import: "optional:configserver:http://config-server:8888"
   cloud:
@@ -21,7 +21,7 @@ jpa:
 
 # H2 Database Configuration
 datasource:
-  url: jdbc:h2:mem:userdb
+  url: jdbc:h2:mem:orderdb
   driver-class-name: org.h2.Driver
   username: sa
   password: password
@@ -36,7 +36,7 @@ h2:
 
 # Server Configuration (will be overridden by Config Server)
 server:
-  port: ${SERVER_PORT:8081}
+  port: ${SERVER_PORT:8083}
 
 # Eureka Client Configuration
 eureka:

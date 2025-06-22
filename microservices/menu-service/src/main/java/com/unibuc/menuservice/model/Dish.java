@@ -8,18 +8,8 @@ import jakarta.validation.constraints.Size;
 import java.util.List;
 
 @Entity
+@Table(name = "dishes")
 public class Dish {
-
-    public Dish() {
-    }
-
-    public Dish(Long id, String name, Double price, boolean available, List<Ingredient> ingredients) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
-        this.ingredients = ingredients;
-        this.available = available;
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,9 +25,6 @@ public class Dish {
     @Min(value = 0, message = "Price must be greater than or equal to 0.")
     private Double price;
 
-    @ManyToMany(mappedBy = "dishes")
-    private List<Order> orders;
-
     @ManyToMany
     @JoinTable(
             name = "dish_ingredient",
@@ -50,7 +37,33 @@ public class Dish {
     @NotNull(message = "Availability must be specified.")
     private boolean available;
 
+    // Constructors
+    public Dish() {
+    }
+
+    public Dish(String name, Double price, boolean available) {
+        this.name = name;
+        this.price = price;
+        this.available = available;
+    }
+
+    public Dish(Long id, String name, Double price, boolean available, List<Ingredient> ingredients) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.ingredients = ingredients;
+        this.available = available;
+    }
+
     // Getters & Setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }
@@ -59,24 +72,12 @@ public class Dish {
         this.name = name;
     }
 
-    public Long getId() {
-        return id;
-    }
-
     public Double getPrice() {
         return price;
     }
 
     public void setPrice(Double price) {
         this.price = price;
-    }
-
-    public List<Order> getOrders() {
-        return orders;
-    }
-
-    public void setOrders(List<Order> orders) {
-        this.orders = orders;
     }
 
     public List<Ingredient> getIngredients() {
@@ -93,5 +94,15 @@ public class Dish {
 
     public void setAvailable(boolean available) {
         this.available = available;
+    }
+
+    @Override
+    public String toString() {
+        return "Dish{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", price=" + price +
+                ", available=" + available +
+                '}';
     }
 }

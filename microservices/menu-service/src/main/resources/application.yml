@@ -1,3 +1,13 @@
 spring:
   application:
     name: menu-service
+  config:
+    import: "optional:configserver:http://config-server:8888"
+  cloud:
+    config:
+      uri: http://config-server:8888
+      enabled: true
+
+# Fallback configuration (will be overridden by Config Server)
+server:
+  port: ${SERVER_PORT:8082}

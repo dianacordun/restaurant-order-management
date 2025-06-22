@@ -1,15 +1,22 @@
 package com.unibuc.menuservice.controller;
 
 import com.unibuc.menuservice.client.UserServiceClient;
+import com.unibuc.menuservice.dto.DishCreateDTO;
+import com.unibuc.menuservice.dto.DishDTO;
+import com.unibuc.menuservice.dto.IngredientDTO;
+import com.unibuc.menuservice.service.DishService;
+import com.unibuc.menuservice.service.IngredientService;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -18,6 +25,12 @@ public class MenuController {
 
     @Autowired
     private UserServiceClient userServiceClient;
+
+    @Autowired
+    private DishService dishService;
+
+    @Autowired
+    private IngredientService ingredientService;
 
     @Value("${spring.application.name}")
     private String applicationName;
@@ -47,13 +60,15 @@ public class MenuController {
                 .register(meterRegistry);
     }
 
+    // ================ MONITORING & HEALTH ENDPOINTS ================
+
     @GetMapping("/info")
     public Map<String, Object> getServiceInfo() {
         infoEndpointCounter.increment();
         Map<String, Object> info = new HashMap<>();
         info.put("service", applicationName);
         info.put("port", serverPort);
-        info.put("message", "Menu Service is running");
+        info.put("message", "Menu Service is running - Full dish and ingredient management");
         info.put("maxDishesPerOrder", maxDishesPerOrder);
         info.put("currency", currency);
         return info;
@@ -86,6 +101,88 @@ public class MenuController {
         }
 
         return result;
+    }
+
+    // ================ DISH ENDPOINTS ================
+
+    @GetMapping("/dishes")
+    public ResponseEntity<List<DishDTO>> getAllDishes() {
+        List<DishDTO> dishes = dishService.getAllDishes();
+        return ResponseEntity.ok(dishes);
+    }
+
+    @GetMapping("/dishes/available")
+    public ResponseEntity<List<DishDTO>> getAllAvailableDishes() {
+        List<DishDTO> dishes = dishService.getAllAvailableDishes();
+        return ResponseEntity.ok(dishes);
+    }
+
+    @GetMapping("/dishes/{id}")
+    public ResponseEntity<DishDTO> getDishById(@PathVariable Long id) {
+        DishDTO dish = dishService.getDishById(id);
+        return ResponseEntity.ok(dish);
+    }
+
+    @PostMapping("/dishes")
+    public ResponseEntity<DishDTO> addDish(@Valid @RequestBody DishCreateDTO dishDTO) {
+        DishDTO newDish = dishService.addDish(dishDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newDish);
+    }
+
+    @PatchMapping("/dishes/{id}")
+    public ResponseEntity<DishDTO> updateDishAvailability(
+            @PathVariable Long id,
+            @RequestParam Boolean availability) {
+        DishDTO updatedDish = dishService.updateDishAvailability(id, availability);
+        return ResponseEntity.ok(updatedDish);
+    }
+
+    @DeleteMapping("/dishes/{id}")
+    public ResponseEntity<Void> deleteDish(@PathVariable Long id) {
+        dishService.deleteDish(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    // ================ INGREDIENT ENDPOINTS ================
+
+    @GetMapping("/ingredients")
+    public ResponseEntity<List<IngredientDTO>> getAllIngredients() {
+        List<IngredientDTO> ingredients = ingredientService.getAllIngredients();
+        return ResponseEntity.ok(ingredients);
+    }
+
+    @GetMapping("/ingredients/{id}")
+    public ResponseEntity<IngredientDTO> getIngredientById(@PathVariable Long id) {
+        IngredientDTO ingredient = ingredientService.getIngredientById(id);
+        return ResponseEntity.ok(ingredient);
+    }
+
+    @PostMapping("/ingredients")
+    public ResponseEntity<IngredientDTO> addIngredient(@Valid @RequestBody IngredientDTO ingredientDTO) {
+        IngredientDTO newIngredient = ingredientService.addIngredient(ingredientDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newIngredient);
+    }
+
+    @PutMapping("/ingredients/{id}")
+    public ResponseEntity<IngredientDTO> updateIngredient(
+            @PathVariable Long id,
+            @Valid @RequestBody IngredientDTO ingredientDTO) {
+        IngredientDTO updatedIngredient = ingredientService.updateIngredient(id, ingredientDTO);
+        return ResponseEntity.ok(updatedIngredient);
+    }
+
+    @PatchMapping("/ingredients/{id}/stock")
+    public ResponseEntity<IngredientDTO> updateIngredientStock(
+            @PathVariable Long id,
+            @RequestParam Integer stock) {
+        IngredientDTO updatedIngredient = ingredientService.updateStock(id, stock);
+        return ResponseEntity.ok(updatedIngredient);
+    }
+
+    @DeleteMapping("/ingredients/{id}")
+    public ResponseEntity<Void> deleteIngredient(@PathVariable Long id) {
+        ingredientService.deleteIngredient(id);
+        return ResponseEntity.noContent().build();
     }
 
 }
